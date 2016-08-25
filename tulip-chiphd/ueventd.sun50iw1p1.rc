@@ -24,3 +24,4 @@
 /dev/transform              0660    system       system
 /dev/pvrsrvkm               0666    root        root
 /dev/pvr_sync               0666    system      graphics
+/dev/sunxi_hdmi_cec			0600    system		system
