@@ -1,4 +1,4 @@
-$(call inherit-product, device/softwinner/tulip-common/tulip_32_bit.mk)
+$(call inherit-product, device/softwinner/tulip-common/tulip_64_bit.mk)
 $(call inherit-product, device/google/atv/products/atv_generic.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/board/generic/device.mk)
 $(call inherit-product, device/softwinner/tulip-common/tulip-common.mk)
