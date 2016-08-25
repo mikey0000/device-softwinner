@@ -127,6 +127,6 @@ $(call inherit-product-if-exists, vendor/google/products/gms_5.1r4_db.mk)
 
 PRODUCT_BRAND := Allwinner
 PRODUCT_NAME := tulip_chiphd
-PRODUCT_DEVICE := tulip-chiphd
+PRODUCT_DEVICE := fugu
 PRODUCT_MODEL := PINE A64
 PRODUCT_MANUFACTURER := Allwinner
