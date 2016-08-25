@@ -86,12 +86,15 @@ on boot
     insmod /system/vendor/modules/videobuf2-core.ko
     insmod /system/vendor/modules/videobuf2-memops.ko
     insmod /system/vendor/modules/videobuf2-dma-contig.ko
+    insmod /system/vendor/modules/videobuf2-vmalloc.ko
     insmod /system/vendor/modules/vfe_io.ko
     #insmod /system/vendor/modules/gc0328c.ko
     #insmod /system/vendor/modules/hm5065.ko
     insmod /system/vendor/modules/s5k4ec.ko
     #insmod /system/vendor/modules/gc2155.ko
     insmod /system/vendor/modules/vfe_v4l2.ko
+
+
 
     setenforce 0
 
@@ -158,6 +161,10 @@ on fs
 on property:sys.boot_completed=1
     chown system system /sys/devices/soc.0/1c2ac00.twi/i2c-0/0-0040/runtime_suspend
     chmod 0660 /sys/devices/soc.0/1c2ac00.twi/i2c-0/0-0040/runtime_suspend
+
+#uvc modules
+    insmod /system/vendor/modules/uvcvideo.ko
+    insmod /system/vendor/modules/gspca_main.ko
 
 service sensors /sbin/busybox sh /system/bin/sensors.sh
     user root
