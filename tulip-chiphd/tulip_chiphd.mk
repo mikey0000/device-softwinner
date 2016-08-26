@@ -12,7 +12,8 @@ $(call inherit-product, vendor/google/atv/atv-vendor.mk)
 PRODUCT_PACKAGES += \
     AtvRemoteService \
     LeanbackLauncher \
-    TV
+    TV \
+    Settings
 
 PRODUCT_PACKAGES += \
     Update \
