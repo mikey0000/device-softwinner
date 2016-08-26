@@ -133,6 +133,9 @@ on boot
     chown bluetooth net_bt_stack /proc/bluetooth/sleep/btwrite
     write /proc/bluetooth/sleep/lpm 1
 
+    # disable IPv6
+    write /proc/sys/net/ipv6/conf/all/disable_ipv6 1
+
 # to observe dnsmasq.leases file for dhcp information of soft ap.
     chown dhcp system /data/misc/dhcp
 
