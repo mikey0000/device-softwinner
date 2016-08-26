@@ -20,7 +20,8 @@ PRODUCT_PACKAGES += \
 	SuperSU \
     ESFileExplorer \
     VideoPlayer \
-    Bluetooth
+    Bluetooth \
+    SideloadLauncher
 
 PRODUCT_PACKAGES += \
     hdmi_cec.tulip
