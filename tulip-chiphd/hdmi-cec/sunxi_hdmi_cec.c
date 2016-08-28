@@ -49,6 +49,7 @@
 #define HDMICEC_IOC_STARTDEVICE _IO(HDMICEC_IOC_MAGIC,  2)
 #define HDMICEC_IOC_STOPDEVICE  _IO(HDMICEC_IOC_MAGIC,  3)
 #define HDMICEC_IOC_GETPHYADDRESS _IOR(HDMICEC_IOC_MAGIC,  4, unsigned char[4])
+#define HDMICEC_IOC_SETWAKEUP   _IOR(HDMICEC_IOC_MAGIC,  10, unsigned char)
 
 #define CEC_SUNXI_PATH "/dev/sunxi_hdmi_cec"
 #define CEC_VENDOR_PULSE_EIGHT 0x001582
@@ -68,42 +69,11 @@ typedef struct hdmi_cec_event {
 
 static int sunxi_hdmi_cec = -1;
 static int enabled = 0;
-static int closed = 0;
 static int powered = 0;
 static pthread_t process_thread_handle = -1;
 static event_callback_t callback_func;
 static void *callback_arg;
 static cec_logical_address_t logical_address = CEC_DEVICE_INACTIVE;
-
-static int enable_hdmi_cec() {
-    if (enabled) {
-        ALOGV("enable_hdmi_cec: is already enabled");
-        return 0;
-    }
-    int ret = ioctl(sunxi_hdmi_cec, HDMICEC_IOC_STARTDEVICE, NULL);
-    if (ret < 0) {
-        ALOGW("enable_hdmi_cec: failed: %d", ret);
-    } else {
-        ALOGV("enable_hdmi_cec: enabled");
-        enabled = 1;
-    }
-    return ret;
-}
-
-static int disable_hdmi_cec() {
-    if (!enabled) {
-        ALOGV("disable_hdmi_cec: is already disabled");
-        return 0;
-    }
-    int ret = ioctl(sunxi_hdmi_cec, HDMICEC_IOC_STOPDEVICE, NULL);
-    if (ret < 0) {
-        ALOGW("disable_hdmi_cec: failed: %d", ret);
-    } else {
-        ALOGV("disable_hdmi_cec: disabled");
-        enabled = 0;
-    }
-    return ret;
-}
 
 static void get_vendor_id(const struct hdmi_cec_device *dev, uint32_t *vendor_id) {
     *vendor_id = CEC_VENDOR_PULSE_EIGHT;
@@ -151,13 +121,13 @@ static int send_message(const struct hdmi_cec_device *dev, const cec_message_t *
 
     int ret = write(sunxi_hdmi_cec, message, msg->length + 1);
     if (ret >= 0) {
-        ALOGV("hdmi-cec sent initiator=%d destination=%d length=%ld msg=%02x %02x %02x",
+        ALOGV("hdmi-cec sent initiator=%d destination=%d length=%zu msg=%02x %02x %02x",
               msg->initiator, msg->destination, msg->length,
               msg->body[0], msg->body[1], msg->body[2]);
         return HDMI_RESULT_SUCCESS;
     }
 
-    ALOGW("hdmi-cec sent failed initiator=%d destination=%d length=%ld msg=%02x %02x %02x errno=%d",
+    ALOGW("hdmi-cec sent failed initiator=%d destination=%d length=%zu msg=%02x %02x %02x errno=%d",
           msg->initiator, msg->destination, msg->length,
           msg->body[0], msg->body[1], msg->body[2],
           errno);
@@ -246,7 +216,7 @@ cec_event(struct hdmi_cec_device *dev, int initiator, int destination, const uns
     event.cec.length = length;
     memcpy(&event.cec.body, data, length);
 
-    ALOGV("hdmi-cec received initiator=%d destination=%d length=%ld msg=%02x %02x %02x",
+    ALOGV("hdmi-cec received initiator=%d destination=%d length=%zu msg=%02x %02x %02x",
           event.cec.initiator, event.cec.destination, event.cec.length,
           event.cec.body[0], event.cec.body[1], event.cec.body[2]);
 
@@ -284,29 +254,6 @@ static void get_port_info(const struct hdmi_cec_device *dev,
     list[0] = &info;
 }
 
-static void set_option(const struct hdmi_cec_device *dev, int flag, int value) {
-    ALOGV("set_option: flag=%d value=%d", flag, value);
-
-    switch (flag) {
-        case HDMI_OPTION_WAKEUP:
-            break;
-
-        case HDMI_OPTION_ENABLE_CEC:
-            if (value) {
-                enable_hdmi_cec();
-            } else {
-                disable_hdmi_cec();
-            }
-            break;
-
-        case HDMI_OPTION_SYSTEM_CEC_CONTROL:
-            break;
-
-        case HDMI_OPTION_SET_LANG:
-            break;
-    }
-}
-
 static void set_audio_return_channel(const struct hdmi_cec_device *dev, int port_id, int flag) {
     ALOGV("set_audio_return_channel: port_id=%d flag=%d", port_id, flag);
 }
@@ -315,33 +262,14 @@ static int is_connected(const struct hdmi_cec_device *dev, int port_id) {
     return HDMI_CONNECTED; // or HDMI_NOT_CONNECTED
 }
 
-static int close_hdmi_cec(struct hw_device_t *device) {
-    ALOGV("close_hdmi_cec");
-
-    if (sunxi_hdmi_cec < 0) {
-        return -1;
-    }
-
-    ALOGD("closing processing thread...");
-    closed = 1;
-    pthread_join(process_thread_handle, NULL);
-    process_thread_handle = 0;
-    disable_hdmi_cec();
-    close(sunxi_hdmi_cec);
-    sunxi_hdmi_cec = -1;
-    return 0;
-}
-
-static int poll_data() {
+static int poll_data(int fd, int timeout_usec) {
     fd_set set;
-    struct timeval timeout;
     FD_ZERO(&set);
-    FD_SET(sunxi_hdmi_cec, &set);
+    FD_SET(fd, &set);
 
-    timeout.tv_sec = 0;
-    timeout.tv_usec = 100000;
+    struct timeval timeout = {0, timeout_usec};
 
-    return select(sunxi_hdmi_cec + 1, &set, NULL, NULL, &timeout);
+    return select(fd + 1, &set, NULL, NULL, &timeout);
 }
 
 static void handle_cec_event(struct hdmi_cec_device *dev, const hdmi_cec_event_t *event) {
@@ -370,8 +298,8 @@ static void handle_cec_event(struct hdmi_cec_device *dev, const hdmi_cec_event_t
 }
 
 static void *process_thread(void *dev) {
-    while (!closed) {
-        int ret = poll_data();
+    while (sunxi_hdmi_cec >= 0) {
+        int ret = poll_data(sunxi_hdmi_cec, 100000);
         if (ret == -1) {
             usleep(500 * 1000);
             ALOGW("failed to receive data");
@@ -392,38 +320,126 @@ static void *process_thread(void *dev) {
     return NULL;
 }
 
-static int open_hdmi_cec(const struct hw_module_t *module, char const *name,
+static int enable_hdmi_cec(const struct hdmi_cec_device *dev) {
+    if (enabled) {
+        ALOGV("enable_hdmi_cec: is already enabled");
+        return 0;
+    }
+    int ret = ioctl(sunxi_hdmi_cec, HDMICEC_IOC_STARTDEVICE, NULL);
+    if (ret < 0) {
+        ALOGW("enable_hdmi_cec: failed=%d", ret);
+    } else {
+        ALOGV("enable_hdmi_cec: enabled");
+        enabled = 1;
+    }
+    return ret;
+}
+
+static int disable_hdmi_cec(const struct hdmi_cec_device *dev) {
+    if (!enabled) {
+        ALOGV("disable_hdmi_cec: is already disabled");
+        return 0;
+    }
+    int ret = ioctl(sunxi_hdmi_cec, HDMICEC_IOC_STOPDEVICE, NULL);
+    if (ret < 0) {
+        ALOGW("disable_hdmi_cec: failed=%d", ret);
+    } else {
+        ALOGV("disable_hdmi_cec: disabled");
+        enabled = 0;
+    }
+    return ret;
+}
+
+static int open_hdmi_cec(struct hdmi_cec_device *dev) {
+    if (sunxi_hdmi_cec >= 0) {
+        ALOGV("open_hdmi_cec: is opened fd=%d", sunxi_hdmi_cec);
+        return 0;
+    }
+
+    sunxi_hdmi_cec = open(CEC_SUNXI_PATH, O_RDWR);
+    if (sunxi_hdmi_cec < 0) {
+        ALOGE("open_hdmi_cec: unable to open device=%d", errno);
+        return -1;
+    }
+
+    int ret = pthread_create(&process_thread_handle, NULL, process_thread, dev);
+    if (ret < 0) {
+        ALOGE("open_hdmi_cec: unable to start thread=%d", ret);
+        close(sunxi_hdmi_cec);
+        sunxi_hdmi_cec = -1;
+        return -1;
+    }
+
+    ALOGV("open_hdmi_cec: opened fd=%d", sunxi_hdmi_cec);
+    return 0;
+}
+
+static int close_hdmi_cec(struct hdmi_cec_device *dev) {
+    if (sunxi_hdmi_cec < 0) {
+        ALOGV("close_hdmi_cec: is closed");
+        return 0;
+    }
+
+    ALOGV("close_hdmi_cec: fd=%d", sunxi_hdmi_cec);
+
+    disable_hdmi_cec(dev);
+    close(sunxi_hdmi_cec);
+    sunxi_hdmi_cec = -1;
+
+    pthread_join(process_thread_handle, NULL);
+    process_thread_handle = 0;
+    return 0;
+}
+
+static int set_hdmi_cec_wake_up(const struct hdmi_cec_device *dev, unsigned char enabled) {
+    int ret = ioctl(sunxi_hdmi_cec, HDMICEC_IOC_SETWAKEUP, enabled);
+    if (ret < 0) {
+        ALOGW("set_hdmi_cec_wake_up: enabled=%d failed=%d", enabled, ret);
+    } else {
+        ALOGV("set_hdmi_cec_wake_up: changed enabled=%d", enabled);
+    }
+    return ret;
+}
+
+static void set_option(struct hdmi_cec_device *dev, int flag, int value) {
+    switch (flag) {
+        case HDMI_OPTION_WAKEUP:
+            set_hdmi_cec_wake_up(dev, value);
+            break;
+
+        case HDMI_OPTION_ENABLE_CEC:
+            if (value) {
+                open_hdmi_cec(dev);
+            } else {
+                close_hdmi_cec(dev);
+            }
+            break;
+
+        case HDMI_OPTION_SYSTEM_CEC_CONTROL:
+            if (value) {
+                enable_hdmi_cec(dev);
+            } else {
+                disable_hdmi_cec(dev);
+            }
+            break;
+
+        default:
+            ALOGV("set_option: flag=%d value=%d unsupported", flag, value);
+            break;
+    }
+}
+
+static int open_hw_module(const struct hw_module_t *module, char const *name,
                          struct hw_device_t **device) {
-    ALOGV("open_hdmi_cec");
+    ALOGV("open_hw_module");
 
-    int ret;
     hdmi_cec_device_t *dev = (hdmi_cec_device_t *) malloc(sizeof(hdmi_cec_device_t));
-
     if (dev == NULL) {
         ALOGE("failed to allocate");
         return -1;
     }
 
-    sunxi_hdmi_cec = open(CEC_SUNXI_PATH, O_RDWR);
-    if (sunxi_hdmi_cec < 0) {
-        ALOGE("unable to open device: %d", errno);
-        free(dev);
-        return -1;
-    }
-
-    ret = pthread_create(&process_thread_handle, NULL, process_thread, dev);
-    if (ret < 0) {
-        ALOGE("unable to start thread: %d", ret);
-        free(dev);
-        close(sunxi_hdmi_cec);
-        sunxi_hdmi_cec = 0;
-        return -1;
-    }
-
-    closed = 0;
-
     memset(dev, 0, sizeof(*dev));
-
     dev->common.tag = HARDWARE_DEVICE_TAG;
     dev->common.version = 0;
     dev->common.module = (struct hw_module_t *) module;
@@ -440,14 +456,25 @@ static int open_hdmi_cec(const struct hw_module_t *module, char const *name,
     dev->set_audio_return_channel = set_audio_return_channel;
     dev->is_connected = is_connected;
 
+    int ret = open_hdmi_cec(dev);
+    if (ret < 0) {
+        ALOGE("open_hw_module: failed: %d", ret);
+        free(dev);
+        return ret;
+    }
+
+    enable_hdmi_cec(dev);
+
+    set_hdmi_cec_wake_up(dev, 1);
+
     *device = (struct hw_device_t *) dev;
 
-    ALOGV("open_hdmi_cec: success");
+    ALOGV("open_hw_module: success");
     return 0;
 }
 
 static struct hw_module_methods_t hdmi_cec_module_methods = {
-    .open = open_hdmi_cec
+    .open = open_hw_module
 };
 
 struct hw_module_t HAL_MODULE_INFO_SYM = {

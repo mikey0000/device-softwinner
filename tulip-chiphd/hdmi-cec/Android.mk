@@ -41,5 +41,7 @@ LOCAL_SHARED_LIBRARIES := \
 LOCAL_SRC_FILES += \
     sunxi_hdmi_cec.c
 
+LOCAL_CFLAGS += -Wno-unused-parameter
+
 include $(BUILD_SHARED_LIBRARY)
 
