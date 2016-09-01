@@ -41,7 +41,27 @@ LOCAL_SHARED_LIBRARIES := \
 LOCAL_SRC_FILES += \
     sunxi_hdmi_cec.c
 
-LOCAL_CFLAGS += -Wno-unused-parameter
+LOCAL_CFLAGS += -Wno-unused-parameter -D_ANDROID_
 
 include $(BUILD_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE := hdmi_cec.test
+LOCAL_MODULE_TAGS := optional
+
+LOCAL_SHARED_LIBRARIES := \
+    libutils \
+    libcutils \
+    liblog \
+    libdl \
+    libhardware
+
+LOCAL_SRC_FILES += \
+	sunxi_hdmi_cec.c \
+	sunxi_hdmi_cec_test.c
+
+LOCAL_CFLAGS += -Wno-unused-parameter -Wall
+
+include $(BUILD_EXECUTABLE)
 
