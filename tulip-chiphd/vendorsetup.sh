@@ -58,7 +58,7 @@ sdcard_append_size() {
 
 sdcard_append_mkfs4() {
 	file="$ANDROID_PRODUCT_OUT/$2.raw.img"
-	sdcard_command "Creating $2..." fallocate -l "$(($3*$SDCARD_BLOCK_SIZE))" "$file" && 
+	sdcard_command "Creating $2..." fallocate -l "$(($3*$SDCARD_BLOCK_SIZE))" "$file" &&
 	sdcard_command "Formatting $2..." mkfs.ext4 -q "$file" &&
 	sdcard_append_file "$1" "$file" "$3"
 	result="$?"
@@ -68,7 +68,7 @@ sdcard_append_mkfs4() {
 
 sdcard_append_vfat() {
 	file="$ANDROID_PRODUCT_OUT/$2.raw.img"
-	sdcard_command "Creating $2..." fallocate -l "$(($3*$SDCARD_BLOCK_SIZE))" "$file" && 
+	sdcard_command "Creating $2..." fallocate -l "$(($3*$SDCARD_BLOCK_SIZE))" "$file" &&
 	sdcard_command "Formatting $2..." mkfs.vfat "$file" &&
 	sdcard_append_file "$1" "$file" "$3"
 	result="$?"
@@ -77,7 +77,7 @@ sdcard_append_vfat() {
 }
 
 sdcard_append_system() {
-	sdcard_command "Unpacking system partition..." simg2img "$ANDROID_PRODUCT_OUT/system.img" "$ANDROID_PRODUCT_OUT/system.raw.img" && 
+	sdcard_command "Unpacking system partition..." simg2img "$ANDROID_PRODUCT_OUT/system.img" "$ANDROID_PRODUCT_OUT/system.raw.img" &&
 	sdcard_append_file "$1" "$ANDROID_PRODUCT_OUT/system.raw.img" "$2"
 	result="$?"
 	rm "$ANDROID_PRODUCT_OUT/system.raw.img" 2>/dev/null
@@ -121,4 +121,8 @@ sdcard_image() {
 	else
 		return 1
 	fi
+}
+
+ninja_tulip() {
+	prebuilts/ninja/linux-x86/ninja -C "$(gettop)" -f out/build-tulip_chiphd.ninja "$@"
 }

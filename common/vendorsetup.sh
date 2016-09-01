@@ -20,9 +20,9 @@
 # In particular, you can add lunch options with the add_lunch_combo
 # function: add_lunch_combo generic-eng
 
-export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
-export PATH=$JAVA_HOME/bin:$PATH
-export CLASSPATH=.:$JAVA_HOME/lib
+#export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
+#export PATH=$JAVA_HOME/bin:$PATH
+#export CLASSPATH=.:$JAVA_HOME/lib
 
 function get_device_dir()
 {
@@ -89,7 +89,7 @@ function extract-bsp()
 	chmod 0755 modules/modules/*
 
 # create modules.mk
-(cat << EOF) > ./modules/modules.mk 
+(cat << EOF) > ./modules/modules.mk
 # modules.mk generate by extract-files.sh, do not edit it.
 PRODUCT_COPY_FILES += \\
 	\$(call find-copy-subdir-files,*,\$(LOCAL_PATH)/modules,system/vendor/modules)
@@ -299,11 +299,11 @@ function patch-lichee()
 
 function lunch-chiphd()
 {
-    lunch tulip_chiphd-eng 
+    lunch tulip_chiphd-eng
 }
 function lunch-chiphd-user()
 {
-    lunch tulip_chiphd-user 
+    lunch tulip_chiphd-user
 }
 function lunch-t1()
 {

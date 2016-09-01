@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#define keymaster_device keymaster0_device
+#define keymaster_device_t keymaster0_device_t
+
 #include <errno.h>
 #include <string.h>
 #include <stdint.h>
 #include <keymaster_aw.h>
 #include <log_aw.h>
 #include <hardware/hardware.h>
-#include <hardware/keymaster.h>
+#include <hardware/keymaster0.h>
 #include <nativehelper/UniquePtr.h>
 #include <dlfcn.h>
 #include <cutils/log.h>
@@ -452,20 +456,16 @@ static int aw_device_open(const hw_module_t* module, const char* name,
 }
 
 static struct hw_module_methods_t keystore_module_methods = {
-    open: aw_device_open,
+    .open = aw_device_open,
 };
 
-struct keystore_module HAL_MODULE_INFO_SYM
+struct hw_module_t HAL_MODULE_INFO_SYM
 __attribute__ ((visibility ("default"))) = {
-    common: {
-        tag: HARDWARE_MODULE_TAG,
-        module_api_version: KEYMASTER_MODULE_API_VERSION_0_2,
-        hal_api_version: HARDWARE_HAL_API_VERSION,
-        id: KEYSTORE_HARDWARE_MODULE_ID,
-        name: "Keymaster AllSoftwinnertech HAL",
-        author: "The Android Open Source Project",
-        methods: &keystore_module_methods,
-        dso: 0,
-        reserved: {},
-    },
+  .tag = HARDWARE_MODULE_TAG,
+  .module_api_version = KEYMASTER_MODULE_API_VERSION_0_2,
+  .hal_api_version = HARDWARE_HAL_API_VERSION,
+  .id = KEYSTORE_HARDWARE_MODULE_ID,
+  .name = "Keymaster AllSoftwinnertech HAL",
+  .author = "The Android Open Source Project",
+  .methods = &keystore_module_methods,
 };

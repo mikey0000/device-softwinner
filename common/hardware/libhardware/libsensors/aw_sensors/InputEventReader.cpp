@@ -18,6 +18,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <poll.h>
+#include <memory.h>
 
 #include <sys/cdefs.h>
 #include <sys/types.h>
@@ -60,7 +61,7 @@ ssize_t InputEventCircularReader::fill(int fd)
                 if (numEventsRead) {
                         mHead += numEventsRead;
                         mFreeSpace -= numEventsRead;
-                        
+
                         if (mHead > mBufferEnd) {
                                 size_t s = mHead - mBufferEnd;
                                 memcpy(mBuffer, mBufferEnd, s * sizeof(input_event));
@@ -83,7 +84,7 @@ void InputEventCircularReader::next()
 {
         mCurr++;
         mFreeSpace++;
-        
+
         if (mCurr >= mBufferEnd) {
                 mCurr = mBuffer;
         }

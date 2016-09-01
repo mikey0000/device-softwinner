@@ -22,13 +22,14 @@
 #include <poll.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <string.h>
 #include <sys/select.h>
 #include <dlfcn.h>
 #include <cutils/log.h>
 #include <cutils/properties.h>
 #include "PressSensor.h"
 
-#define PRESS_DATA_NAME    "mpl3115" 
+#define PRESS_DATA_NAME    "mpl3115"
 #define PRESS_SYSFS_PATH   "/sys/class/input"
 #define PRESS_SYSFS_DELAY  "poll"
 #define PRESS_SYSFS_ENABLE "enable"
@@ -59,7 +60,7 @@ PressSensor::PressSensor()
         mPendingEvent[temperature].type    = SENSOR_TYPE_TEMPERATURE;
         mPendingEvent[temperature].orientation.status = SENSOR_STATUS_ACCURACY_HIGH;
 	mPendingEvent[temperature].version = sizeof(sensors_event_t);
-	
+
 	if(sensor_get_class_path(mClassPath))
 	{
 		ALOGE("Can`t find the press sensor!");
@@ -82,7 +83,7 @@ int PressSensor::setEnable(int32_t handle, int en)
 		mEnabled[what]++;
 	else
 		mEnabled[what]--;
-		
+
 	if(mEnabled[what] < 0)
 		mEnabled[what] = 0;
 	if(mEnabled[press] > 0 || mEnabled[temperature] > 0)
@@ -101,7 +102,7 @@ int PressSensor::setDelay(int32_t handle, int64_t ns)
         if (ns < 0)
                 return -EINVAL;
 	int what = press;
-	
+
         switch(handle){
 		case ID_P : what = press; break;
 		case ID_T : what = temperature; break;
@@ -150,7 +151,7 @@ int PressSensor::readEvents(sensors_event_t* data, int count)
 				        }
 			  	}
 	                }
-	                
+
 		        if (!mPendingMask) {
 		                mInputReader.next();
 		        }
@@ -316,4 +317,3 @@ int PressSensor::sensor_get_class_path(char *class_path)
 }
 
 /*****************************************************************************/
-

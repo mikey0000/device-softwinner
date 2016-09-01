@@ -3,7 +3,7 @@
 #define __AWKEYMASTER_LOGAPI_INCLUDE_H_
 
 #include <utils/Log.h>
-#include <hardware/keymaster.h>
+#include <hardware/keymaster0.h>
 
 #ifdef __cplusplus
 extern "C" {

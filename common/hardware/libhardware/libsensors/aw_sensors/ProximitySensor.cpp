@@ -19,6 +19,7 @@
 #include <math.h>
 #include <poll.h>
 #include <unistd.h>
+#include <memory.h>
 #include <dirent.h>
 #include <sys/select.h>
 
@@ -36,19 +37,19 @@ ProximitySensor::ProximitySensor()
         mInputReader(4),
         mPendingMask(0)
 {
-    
+
         memset(&mPendingEvent, 0, sizeof(mPendingEvent));
-        
+
         mPendingEvent.version = sizeof(sensors_event_t);
         mPendingEvent.sensor = ID_PX;
         mPendingEvent.type = SENSOR_TYPE_PROXIMITY;
         memset(mPendingEvent.data, 0, sizeof(mPendingEvent.data));
-        
+
 #ifdef DEBUG_SENSOR
         ALOGD("%s:data_fd:%d\n", __func__,data_fd);
 #endif
 
-#if 0   
+#if 0
     if (data_fd > 0) {
         strcpy(input_sysfs_path, "/sys/class/input/");
         strcat(input_sysfs_path, input_name);
@@ -80,8 +81,8 @@ int ProximitySensor::setDelay(int32_t handle, int64_t ns)
 
         char buf[80];
         int bytes = sprintf(buf, "%lld", ns/1000 / 1000);
-        
-  
+
+
         int err = set_sysfs_input_attr(proSensorInfo.classPath,"ps_poll_delay",buf,bytes);
 
 
@@ -89,20 +90,20 @@ int ProximitySensor::setDelay(int32_t handle, int64_t ns)
 }
 
 int ProximitySensor::setEnable(int32_t, int en) {
-        char buf[2];  
-        int err = -1;     
-        
+        char buf[2];
+        int err = -1;
+
 	if(proSensorInfo.classPath[0] == ICHAR)
 		return -1;
-	
+
         int flags = en ? 1 : 0;
-                
+
         if (flags != mEnabled) {
-	        int bytes = sprintf(buf, "%d", flags);	
+	        int bytes = sprintf(buf, "%d", flags);
 	        err = set_sysfs_input_attr(proSensorInfo.classPath,"enable",buf,bytes);
 	        mEnabled = flags;
 	}
-	
+
 	return 0;
 }
 
@@ -118,31 +119,31 @@ int ProximitySensor::readEvents(sensors_event_t* data, int count)
 
         int numEventReceived = 0;
         input_event const* event;
-        
+
         while (count && mInputReader.readEvent(&event)) {
                 int type = event->type;
-                
+
                 if ((type == EV_ABS) || (type == EV_REL) || (type == EV_KEY)) {
                         processEvent(event->code, event->value);
                         mInputReader.next();
                 } else if (type == EV_SYN) {
                         int64_t time = timevalToNano(event->time);
-                        
+
 			if (mPendingMask) {
 				mPendingMask = 0;
 				mPendingEvent.timestamp = time;
-				
+
 				if (mEnabled) {
 					*data++ = mPendingEvent;
 					count--;
 					numEventReceived++;
-				}				
+				}
 			}
-			
+
                         if (!mPendingMask) {
                                 mInputReader.next();
                         }
-                        
+
                 } else {
                         ALOGE("AccelSensor: unknown event (type=%d, code=%d)",
                                 type, event->code);
@@ -161,10 +162,10 @@ void ProximitySensor::processEvent(int code, int value) {
         #ifdef DEBUG_SENSOR
                 ALOGD("distance value: %f\n", mPendingEvent.distance);
         #endif
-        
+
         }
-        
-        
+
+
 }
 
 float ProximitySensor::indexToValue(size_t index) const

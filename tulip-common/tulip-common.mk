@@ -8,21 +8,22 @@ DEVICE_PACKAGE_OVERLAYS := \
 PRODUCT_PACKAGES += \
     lights.tulip \
     hwcomposer.tulip \
-    camera.tulip
+    # camera.tulip # missing libMemAdapter
 
 PRODUCT_PACKAGES += \
     libion \
     setmacaddr
 # add for bluetooth addr
 PRODUCT_PROPERTY_OVERRIDES += \
-       ro.bt.bdaddr_path=/data/btaddr.txt        
+       ro.bt.bdaddr_path=/data/btaddr.txt
 
 # audio
 PRODUCT_PACKAGES += \
-    audio.primary.tulip \
     audio.a2dp.default \
     audio.usb.default \
     audio.r_submix.default
+
+# audio.primary.tulip # ayufan: missing external libraries
 
 PRODUCT_PACKAGES +=\
     charger_res_images \
@@ -31,7 +32,7 @@ PRODUCT_PACKAGES +=\
 # Set zygote config
 # PRODUCT_DEFAULT_PROPERTY_OVERRIDES += ro.zygote=zygote64_32
 # PRODUCT_COPY_FILES += system/core/rootdir/init.zygote64_32.rc:root/init.zygote64_32.rc
-	
+
 PRODUCT_COPY_FILES += \
     hardware/aw/audio/tulip/audio_policy.conf:system/etc/audio_policy.conf \
     hardware/aw/audio/tulip/phone_volume.conf:system/etc/phone_volume.conf \
@@ -50,7 +51,7 @@ PRODUCT_COPY_FILES += \
 
 PRODUCT_COPY_FILES += \
     device/softwinner/common/config/android.hardware.sensor.temperature.ambient.xml:system/etc/permissions/android.hardware.sensor.temperature.ambient.xml
-	
+
 # video libs
 PRODUCT_PACKAGES += \
     libMemAdapter            \
@@ -75,13 +76,13 @@ PRODUCT_PACKAGES += \
     libI420colorconvert      \
     libawmetadataretriever   \
     libawplayer
-	
+
 # egl
 PRODUCT_COPY_FILES += \
     device/softwinner/tulip-common/egl/egl.cfg:system/lib64/egl/egl.cfg \
-    device/softwinner/tulip-common/egl/lib/gralloc.default.so:system/lib/hw/gralloc.default.so \
+    device/softwinner/tulip-common/egl/lib/gralloc.tulip.so:system/lib/hw/gralloc.tulip.so \
     device/softwinner/tulip-common/egl/lib/libGLES_mali.so:system/lib/egl/libGLES_mali.so \
-    device/softwinner/tulip-common/egl/lib64/gralloc.default.so:system/lib64/hw/gralloc.default.so \
+    device/softwinner/tulip-common/egl/lib64/gralloc.tulip.so:system/lib64/hw/gralloc.tulip.so \
     device/softwinner/tulip-common/egl/lib64/libGLES_mali.so:system/lib64/egl/libGLES_mali.so
 
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -95,7 +96,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # 131072=0x20000 196608=0x30000
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.opengles.version=131072
-	
+
 # For mali GPU only
 PRODUCT_PROPERTY_OVERRIDES += \
     debug.hwui.render_dirty_regions=false

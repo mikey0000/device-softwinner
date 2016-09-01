@@ -22,37 +22,4 @@ BOARD_CHARGER_ENABLE_SUSPEND := true
 BOARD_SEPOLICY_DIRS := \
     device/softwinner/tulip-common/sepolicy
 
-BOARD_SEPOLICY_UNION := \
-	dhcp.te \
-	bluetooth.te \
-	device.te \
-	file_contexts \
-	file.te \
-	genfs_contexts \
-	init.te \
-	kernel.te \
-	logger.te \
-	mediaserver.te \
-	netd.te \
-	platform_app.te \
-	preinstall.te \
-	recovery.te \
-        rild.te \
-       sayeye.te \
-	sdcardd.te \
-	sensors.te \
-	service_contexts \
-	shell.te \
-	surfaceflinger.te \
-	system_app.te \
-	system_server.te \
-	unconfined.te \
-	untrusted_app.te \
-	vold.te \
-	wpa.te \
-	zygote.te \
-    keystore.te
-
 USE_OPENGL_RENDERER := true
-
-

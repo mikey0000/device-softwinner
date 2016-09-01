@@ -17,13 +17,11 @@ common_src_files := \
        BenchMark.cpp \
 
 common_c_includes := \
-       external/stlport/stlport \
        bionic \
        frameworks/native/include \
 
 common_shared_libraries := \
        libsysutils \
-       libstlport \
        libcutils \
        libbinder \
        liblog \

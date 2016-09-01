@@ -33,6 +33,9 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <errno.h>
+#include <stdio.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -480,4 +483,3 @@ struct hw_module_t HAL_MODULE_INFO_SYM = {
     .author = "Kamil Trzcinski <ayufan@ayufan.eu>",
     .methods = &hdmi_cec_module_methods,
 };
-

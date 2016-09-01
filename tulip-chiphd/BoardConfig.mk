@@ -11,7 +11,7 @@ TARGET_NO_RECOVERY := false
 TARGET_NO_KERNEL := false
 
 INSTALLED_KERNEL_TARGET := kernel
-BOARD_KERNEL_CMDLINE := 
+BOARD_KERNEL_CMDLINE :=
 TARGET_USERIMAGES_USE_EXT4 := true
 BOARD_FLASH_BLOCK_SIZE := 4096
 BOARD_SYSTEMIMAGE_PARTITION_SIZE := 1610612736
@@ -23,9 +23,9 @@ SW_BOARD_TOUCH_RECOVERY := true
 
 # wifi and bt configuration
 # 1. Wifi Configuration
-# 1.1 realtek wifi support 
+# 1.1 realtek wifi support
 # 1.1  realtek wifi configuration
-BOARD_WIFI_VENDOR := realtek
+#BOARD_WIFI_VENDOR := realtek
 ifeq ($(BOARD_WIFI_VENDOR), realtek)
     WPA_SUPPLICANT_VERSION := VER_0_8_X
     BOARD_WPA_SUPPLICANT_DRIVER := NL80211
@@ -67,7 +67,7 @@ endif
 
 # 2. Bluetooth Configuration
 # make sure BOARD_HAVE_BLUETOOTH is true for every bt vendor
-BOARD_HAVE_BLUETOOTH := true
+BOARD_HAVE_BLUETOOTH := false # missing bluedroid support, needs to change to system/bt
 #BOARD_HAVE_BLUETOOTH_BCM := true
 BOARD_HAVE_BLUETOOTH_NAME := rtl8723bs
 BOARD_HAVE_BLUETOOTH_RTK_COEX := true

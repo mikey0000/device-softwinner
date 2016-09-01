@@ -19,6 +19,7 @@
 #include <math.h>
 #include <poll.h>
 #include <unistd.h>
+#include <string.h>
 #include <dirent.h>
 #include <sys/select.h>
 #include <stdlib.h>
@@ -42,7 +43,7 @@ SensorBase::~SensorBase() {
         if (data_fd >= 0) {
                 close(data_fd);
         }
-    
+
         if (dev_fd >= 0) {
                 close(dev_fd);
         }
@@ -53,7 +54,7 @@ int SensorBase::open_device() {
                 dev_fd = open(dev_name, O_RDONLY);
                 ALOGE_IF(dev_fd<0, "Couldn't open %s (%s)", dev_name, strerror(errno));
         }
-        
+
         return 0;
 }
 
@@ -62,15 +63,15 @@ int SensorBase::close_device() {
                 close(dev_fd);
                 dev_fd = -1;
         }
-        
+
         return 0;
 }
-int SensorBase::getFd() const 
-{    
-	if (!data_name) {        
-	        return dev_fd;    
+int SensorBase::getFd() const
+{
+	if (!data_name) {
+	        return dev_fd;
 	}
-	   
+
 	return data_fd;
 }
 int SensorBase::setEnable(int32_t handle, int enabled) {
@@ -93,10 +94,10 @@ void  processEvent(int code, int value) {
 
 int64_t SensorBase::getTimestamp() {
         struct timespec t;
-        
+
         t.tv_sec = t.tv_nsec = 0;
         clock_gettime(CLOCK_MONOTONIC, &t);
-        
+
         return int64_t(t.tv_sec)*1000000000LL + t.tv_nsec;
 }
 int SensorBase::set_sysfs_input_attr(char *class_path,const char *attr, char *value, int len)
@@ -108,24 +109,24 @@ int SensorBase::set_sysfs_input_attr(char *class_path,const char *attr, char *va
 	    || attr == NULL || value == NULL || len < 1) {
 		return -EINVAL;
 	}
-	
+
 	snprintf(path, sizeof(path), "%s/%s", class_path, attr);
 	path[sizeof(path) - 1] = '\0';
 	fd = open(path, O_RDWR);
-	
+
 	if (fd < 0) {
 		ALOGD("Could not open (write-only) SysFs attribute \"%s\" (%s).", attr, strerror(errno));
 		close(fd);
 		return -errno;
 	}
-	
-	if (write(fd, value, len) < 0) {  
-	        ALOGD("path:%s", path);     
+
+	if (write(fd, value, len) < 0) {
+	        ALOGD("path:%s", path);
 	        ALOGD("Could not write SysFs attribute \"%s\" (%s).", attr, strerror(errno));
 		close(fd);
 		return -errno;
 	}
-	
+
 	close(fd);
 
 	return 0;
@@ -144,31 +145,31 @@ int SensorBase::openInput(const char* inputName) {
         dir = opendir(dirname);
         if(dir == NULL)
                 return -1;
-                
+
         strcpy(devname, dirname);
         filename = devname + strlen(devname);
         *filename++ = '/';
-        
+
         while((de = readdir(dir))) {
                 if(de->d_name[0] == '.' &&
                         (de->d_name[1] == '\0' ||
                         (de->d_name[1] == '.' && de->d_name[2] == '\0')))
                         continue;
-                        
+
                 strcpy(filename, de->d_name);
                 fd = open(devname, O_RDONLY);
 
                 if (fd>=0) {
                         char name[80];
-                
+
                         if (ioctl(fd, EVIOCGNAME(sizeof(name) - 1), &name) < 1) {
                                 name[0] = '\0';
                         }
 //
 //                        ALOGD("name is %s \n", name);
-//		        ALOGD("inputName is %s \n", inputName);	
+//		        ALOGD("inputName is %s \n", inputName);
                         if (!strcmp(name, inputName)) {
-		
+
                                 break;
                         } else {
                                 close(fd);
@@ -176,17 +177,14 @@ int SensorBase::openInput(const char* inputName) {
                         }
                 }
         }
-        
+
         closedir(dir);
 #ifdef DEBUG_IF
         ALOGE_IF(fd<0, "couldn't find '%s' input device", inputName);
 #endif
-        
+
         return fd;
 }
 int SensorBase::readEvents(sensors_event_t* data, int count) {
   	return 0;
 }
-
-
-

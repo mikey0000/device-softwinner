@@ -16,8 +16,7 @@
 #ifndef __AWKEYMASTER_MODULEAPI_INCLUDE_H_
 #define __AWKEYMASTER_MODULEAPI_INCLUDE_H_
 
-#include <hardware/keymaster.h>
-
+#include <hardware/keymaster0.h>
 
 int aw_keymaster_req_libsym(void *handle);
 
