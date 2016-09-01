@@ -22,6 +22,8 @@
 
 add_lunch_combo tulip_chiphd-eng
 add_lunch_combo tulip_chiphd-user
+add_lunch_combo tulip_chiphd_atv-eng
+add_lunch_combo tulip_chiphd_atv-user
 
 
 SDCARD_BLOCK_SIZE=512

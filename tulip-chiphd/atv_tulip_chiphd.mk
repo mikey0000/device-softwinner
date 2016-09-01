@@ -1,20 +1,26 @@
 $(call inherit-product, device/softwinner/tulip-common/tulip_64_bit.mk)
-$(call inherit-product, build/target/product/full_base.mk)
+$(call inherit-product, device/google/atv/products/atv_generic.mk)
 $(call inherit-product, device/softwinner/tulip-common/tulip-common.mk)
 $(call inherit-product-if-exists, device/softwinner/tulip-chiphd/modules/modules.mk)
 
 DEVICE_PACKAGE_OVERLAYS := device/softwinner/tulip-chiphd/overlay \
                            $(DEVICE_PACKAGE_OVERLAYS)
 
+$(call inherit-product, vendor/google/atv/atv-vendor.mk)
+
 PRODUCT_PACKAGES += \
-    Launcher3
+    AtvRemoteService \
+    LeanbackLauncher \
+    TV \
+    Settings
 
 PRODUCT_PACKAGES += \
     Update \
 	SuperSU \
     ESFileExplorer \
     VideoPlayer \
-    Bluetooth
+    Bluetooth \
+    SideloadLauncher
 
 PRODUCT_PACKAGES += \
     hdmi_cec.tulip
@@ -39,7 +45,8 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.bluetooth.xml:system/etc/permissions/android.hardware.bluetooth.xml \
     frameworks/native/data/etc/android.hardware.bluetooth_le.xml:system/etc/permissions/android.hardware.bluetooth_le.xml \
     frameworks/native/data/etc/android.hardware.ethernet.xml:system/etc/permissions/android.hardware.ethernet.xml \
-    frameworks/native/data/etc/android.hardware.hdmi.cec.xml:system/etc/permissions/android.hardware.hdmi.cec.xml
+    frameworks/native/data/etc/android.hardware.hdmi.cec.xml:system/etc/permissions/android.hardware.hdmi.cec.xml \
+    frameworks/native/data/etc/android.software.live_tv.xml:system/etc/permissions/android.software.live_tv.xml
 
 PRODUCT_COPY_FILES += \
     device/softwinner/tulip-chiphd/configs/camera.cfg:system/etc/camera.cfg \
@@ -81,7 +88,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # xhdpi, while we are hardcoding the 1080 resolution.
 # when we start doing 720 as well, will need to stop hardcoding this.
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.sf.lcd_density=160 \
+    ro.sf.lcd_density=320 \
 
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.spk_dul.used=false \
@@ -108,10 +115,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.hdmi.device_type=4
 
-PRODUCT_CHARACTERISTICS := tablet
+PRODUCT_CHARACTERISTICS := tv
 
-PRODUCT_AAPT_CONFIG := mdpi large xlarge
-PRODUCT_AAPT_PREF_CONFIG := mdpi
+PRODUCT_AAPT_CONFIG := normal large xlarge hdpi xhdpi
+PRODUCT_AAPT_PREF_CONFIG := xhdpi
 
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.software.app_widgets.xml:system/etc/permissions/android.software.app_widgets.xml
@@ -119,7 +126,7 @@ PRODUCT_COPY_FILES += \
 $(call inherit-product-if-exists, vendor/google/products/gms_5.1r4_db.mk)
 
 PRODUCT_BRAND := Allwinner
-PRODUCT_NAME := tulip_chiphd
-PRODUCT_DEVICE := tulip-chiphd
+PRODUCT_NAME := atv_tulip_chiphd
+PRODUCT_DEVICE := atv-tulip-chiphd
 PRODUCT_MODEL := PINE A64
 PRODUCT_MANUFACTURER := Allwinner
