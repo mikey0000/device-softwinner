@@ -21,9 +21,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PACKAGES += \
     audio.a2dp.default \
     audio.usb.default \
-    audio.r_submix.default
-
-# audio.primary.tulip # ayufan: missing external libraries
+    audio.r_submix.default \
+    audio.primary.tulip
 
 PRODUCT_PACKAGES +=\
     charger_res_images \
