@@ -15,4 +15,5 @@
 #
 
 PRODUCT_MAKEFILES := \
+    $(LOCAL_DIR)/tulip_chiphd.mk \
     $(LOCAL_DIR)/tulip_chiphd_atv.mk
