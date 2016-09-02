@@ -26,7 +26,7 @@ on init
     mkdir /storage/usbhost 0700 root root
     symlink /storage/usbhost /mnt/usbhost
 
-    mount debugfs debugfs /sys/kernel/debug
+    #mount debugfs debugfs /sys/kernel/debug
 
 
 on post-fs
@@ -94,8 +94,6 @@ on boot
     #insmod /system/vendor/modules/gc2155.ko
     insmod /system/vendor/modules/vfe_v4l2.ko
 
-
-
     setenforce 0
 
 # network
@@ -157,10 +155,10 @@ on early-fs
 on fs
     # UDISK would be mounted as data partition when multiple user enabled.
     #format_userdata /dev/block/by-name/UDISK ASTAR
-    format_userdata /dev/block/by-name/private PRIVATE
+    #format_userdata /dev/block/by-name/private PRIVATE
     mkdir /mnt/private
     mount vfat /dev/block/by-name/private /mnt/private
-	
+
 on property:sys.boot_completed=1
     chown system system /sys/devices/soc.0/1c2ac00.twi/i2c-0/0-0040/runtime_suspend
     chmod 0660 /sys/devices/soc.0/1c2ac00.twi/i2c-0/0-0040/runtime_suspend

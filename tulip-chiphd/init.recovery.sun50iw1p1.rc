@@ -10,8 +10,8 @@ on init
     mkdir /bootloader
     exec /sbin/busybox sh /sbin/init_parttion.sh
 
-service console /sbin/sh
-    console
+service console /sbin/busybox sh
+    class core
+    seclabel u:r:shell:s0
     disabled
-    user shell
-    group log
+    console
