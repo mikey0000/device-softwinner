@@ -26,13 +26,11 @@ PRODUCT_COPY_FILES += \
     device/softwinner/tulip-chiphd/ueventd.sun50iw1p1.rc:root/ueventd.sun50iw1p1.rc \
     device/softwinner/tulip-chiphd/recovery.fstab:recovery.fstab \
     device/softwinner/tulip-chiphd/modules/modules/sunxi_tr.ko:root/sunxi_tr.ko \
+    device/softwinner/tulip-chiphd/modules/modules/nand.ko:root/nand.ko \
     device/softwinner/tulip-chiphd/modules/modules/disp.ko:root/disp.ko \
     device/softwinner/tulip-chiphd/modules/modules/hdmi.ko:root/hdmi.ko \
-    device/softwinner/tulip-chiphd/modules/modules/nand.ko:root/nand.ko \
     device/softwinner/tulip-chiphd/modules/modules/sw-device.ko:obj/sw-device.ko \
     device/softwinner/tulip-chiphd/modules/modules/gslX680new.ko:obj/gslX680new.ko \
-
-#		device/softwinner/tulip-chiphd/recovery.fstab:root/sbin/adbd
 
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.camera.xml:system/etc/permissions/android.hardware.camera.xml \

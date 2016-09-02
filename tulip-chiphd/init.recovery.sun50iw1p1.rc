@@ -1,4 +1,6 @@
 on init
+    setenforce 0
+
     insmod /nand.ko
     insmod /sw-device.ko debug_mask=0xff ctp_mask=1
     insmod /sunxi-keyboard.ko
@@ -15,3 +17,8 @@ service console /sbin/busybox sh
     seclabel u:r:shell:s0
     disabled
     console
+
+service watchdogd /sbin/watchdogd 60 20
+    class core
+    oneshot
+    seclabel u:r:watchdogd:s0
