@@ -73,7 +73,7 @@ endif
 
 # 2. Bluetooth Configuration
 # make sure BOARD_HAVE_BLUETOOTH is true for every bt vendor
-BOARD_HAVE_BLUETOOTH := false # missing bluedroid support, needs to change to system/bt
+BOARD_HAVE_BLUETOOTH := false
 #BOARD_HAVE_BLUETOOTH_BCM := true
 BOARD_HAVE_BLUETOOTH_NAME := rtl8723bs
 BOARD_HAVE_BLUETOOTH_RTK_COEX := true

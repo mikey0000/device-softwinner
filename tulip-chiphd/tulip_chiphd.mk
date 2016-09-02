@@ -2,6 +2,7 @@ $(call inherit-product, device/softwinner/tulip-common/tulip_64_bit.mk)
 $(call inherit-product, build/target/product/full_base.mk)
 $(call inherit-product, device/softwinner/tulip-common/tulip-common.mk)
 $(call inherit-product-if-exists, device/softwinner/tulip-chiphd/modules/modules.mk)
+$(call inherit-product, frameworks/native/build/tablet-7in-xhdpi-2048-dalvik-heap.mk)
 
 DEVICE_PACKAGE_OVERLAYS := device/softwinner/tulip-chiphd/overlay \
                            $(DEVICE_PACKAGE_OVERLAYS)
@@ -13,7 +14,7 @@ PRODUCT_PACKAGES += \
     SuperSU \
     ESFileExplorer \
     VideoPlayer \
-    Bluetooth
+		Bluetooth
 
 PRODUCT_PACKAGES += \
     hdmi_cec.tulip
@@ -47,6 +48,9 @@ PRODUCT_COPY_FILES += \
     device/softwinner/tulip-chiphd/configs/sunxi-keyboard.kl:system/usr/keylayout/sunxi-keyboard.kl \
     device/softwinner/tulip-chiphd/configs/sunxi_ir_recv.kl:system/usr/keylayout/sunxi_ir_recv.kl \
     device/softwinner/tulip-chiphd/configs/tp.idc:system/usr/idc/tp.idc
+
+PRODUCT_COPY_FILES += \
+	device/softwinner/tulip-chiphd/recovery.fstab:system/lib/hw/bluetooth.tulip.so
 
 #PRODUCT_COPY_FILES += \
     device/softwinner/tulip-chiphd/hawkview/sensor_list_cfg.ini:system/etc/hawkview/sensor_list_cfg.ini

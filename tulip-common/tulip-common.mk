@@ -74,7 +74,24 @@ PRODUCT_PACKAGES += \
     libOmxVenc               \
     libI420colorconvert      \
     libawmetadataretriever   \
-    libawplayer
+    libawplayer \
+		libawh264		\
+		libawh265		\
+		libawmjpeg		\
+		libawmjpegplus		\
+		libawmpeg2		\
+		libawmpeg4base		\
+		libawvp6soft		\
+		libawvp8		\
+		libawwmv3  		\
+		libawvp9soft		\
+		libawh265soft		\
+		libawmpeg4h263		\
+		libawmpeg4vp6		\
+		libawmpeg4normal	\
+		libawmpeg4dx    	\
+		libawwmv12soft 		\
+		libawavs
 
 # egl
 PRODUCT_COPY_FILES += \
