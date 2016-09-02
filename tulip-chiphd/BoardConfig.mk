@@ -27,13 +27,17 @@ SW_BOARD_TOUCH_RECOVERY := true
 # 1. Wifi Configuration
 # 1.1 realtek wifi support
 # 1.1  realtek wifi configuration
-#BOARD_WIFI_VENDOR := realtek
+BOARD_WIFI_VENDOR := realtek
 ifeq ($(BOARD_WIFI_VENDOR), realtek)
     WPA_SUPPLICANT_VERSION := VER_0_8_X
     BOARD_WPA_SUPPLICANT_DRIVER := NL80211
     BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_rtl
     BOARD_HOSTAPD_DRIVER        := NL80211
     BOARD_HOSTAPD_PRIVATE_LIB   := lib_driver_cmd_rtl
+
+    WIFI_DRIVER_MODULE_PATH := "/system/vendor/modules/8723bs.ko"
+    WIFI_DRIVER_MODULE_NAME := "8723bs"
+    WIFI_DRIVER_MODULE_ARG := "ifname=wlan0 if2name=p2p0"
 
     BOARD_USR_WIFI := rtl8723bs
 endif
