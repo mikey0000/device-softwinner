@@ -26,99 +26,102 @@ add_lunch_combo tulip_chiphd_atv-eng
 add_lunch_combo tulip_chiphd_atv-user
 
 
-SDCARD_BLOCK_SIZE=512
-
-sdcard_command() {
-	echo -n "$1 " 1>&2
-	shift
-	if eval "$@"; then
-		echo "success" 1>&2
-		return 0
-	else
-		echo "failed" 1>&2
-		return 1
-	fi
-}
-
-sdcard_file_size() {
-	stat -c%s "$1" 2>/dev/null
-}
-
-sdcard_append_file() {
-	IN_SIZE="$(sdcard_file_size $2)" &&
-	MAX_IN_SIZE="$(($3*$SDCARD_BLOCK_SIZE))" &&
-	sdcard_command "Validating a size of $(basename $2)..." "test $IN_SIZE -le $MAX_IN_SIZE" &&
-	sdcard_command "Appending $(basename $2) of $IN_SIZE..." dd if="$2" of="$1" bs=$SDCARD_BLOCK_SIZE count="$3" oflag=append conv=notrunc status=none &&
-	( [[ $MAX_IN_SIZE == $IN_SIZE ]] || sdcard_command "Aligning $(basename $2)..." dd if="$2" of="$1" bs="$((MAX_IN_SIZE-$IN_SIZE))" count="1" oflag=append conv=notrunc status=none )
-}
-
-sdcard_append_size() {
-	sdcard_command "Appending zero-space $2..." dd if=/dev/zero of="$1" bs="$SDCARD_BLOCK_SIZE" count="$3" oflag=append conv=notrunc status=none
-}
-
-sdcard_append_mkfs4() {
-	file="$ANDROID_PRODUCT_OUT/$2.raw.img"
-	sdcard_command "Creating $2..." fallocate -l "$(($3*$SDCARD_BLOCK_SIZE))" "$file" && 
-	sdcard_command "Formatting $2..." mkfs.ext4 -q "$file" &&
-	sdcard_append_file "$1" "$file" "$3"
-	result="$?"
-	rm "$file" 2>/dev/null
-	return $result
-}
-
-sdcard_append_vfat() {
-	file="$ANDROID_PRODUCT_OUT/$2.raw.img"
-	sdcard_command "Creating $2..." fallocate -l "$(($3*$SDCARD_BLOCK_SIZE))" "$file" && 
-	sdcard_command "Formatting $2..." mkfs.vfat "$file" &&
-	sdcard_append_file "$1" "$file" "$3"
-	result="$?"
-	rm "$file" 2>/dev/null
-	return $result
-}
-
-sdcard_append_system() {
-	sdcard_command "Unpacking system partition..." simg2img "$ANDROID_PRODUCT_OUT/system.img" "$ANDROID_PRODUCT_OUT/system.raw.img" && 
-	sdcard_append_file "$1" "$ANDROID_PRODUCT_OUT/system.raw.img" "$2"
-	result="$?"
-	rm "$ANDROID_PRODUCT_OUT/system.raw.img" 2>/dev/null
-	return $result
-}
-
-sdcard_init_bootloader() {
-	sdcard_command "Unpacking bootloader..." gunzip -c "$DEVICE/bootloader/bootloader.img.gz"
-}
-
-sdcard_create_image() {
-	sdcard_init_bootloader &&
-	sdcard_append_file "$1" "$ANDROID_PRODUCT_OUT/boot.img" 32768 &&
-	sdcard_append_system "$1" 3145728 &&
-	sdcard_append_size "$1" misc 32768 &&
-	sdcard_append_file "$1" "$ANDROID_PRODUCT_OUT/recovery.img" 65536 &&
-	sdcard_append_mkfs4 "$1" cache 1572864 &&
-	sdcard_append_size "$1" metadata 32768 &&
-	sdcard_append_vfat "$1" private 32768 &&
-	sdcard_append_mkfs4 "$1" alog 163840 &&
-	sdcard_append_mkfs4 "$1" UDISK 9943039
-}
-
 sdcard_image() {
-	if [[ $# -ne 1 ]]; then
-		echo "Usage: $0 <output-image>"
+	if [[ $# -ne 1 ]] && [[ $# -ne 2 ]]; then
+		echo "Usage: $0 <output-image> [data-size-in-MB]"
 		return 1
 	fi
 
-	if [[ -z "$ANDROID_PRODUCT_OUT" ]]; then
-		echo "Define ANDROID_PRODUCT_OUT"
-		return 1
-	fi
+  out_gz="$1"
+  out="$(dirname "$out_gz")/$(basename "$out_gz" .gz)"
 
-	get_device_dir
+  get_device_dir
 
-	if  sdcard_create_image "/dev/stdout" | gzip -c > "$1"
-	then
-		echo "Done: $1"
-		return 0
-	else
-		return 1
-	fi
+  boot0="$DEVICE/bootloader/boot0.bin"
+  uboot="$DEVICE/bootloader/u-boot-with-dtb.bin"
+  kernel="$ANDROID_PRODUCT_OUT/kernel"
+  ramdisk="$ANDROID_PRODUCT_OUT/ramdisk.img"
+  ramdisk_recovery="$ANDROID_PRODUCT_OUT/ramdisk-recovery.img"
+
+  boot0_position=8      # KiB
+  uboot_position=19096  # KiB
+  part_position=21      # MiB
+  boot_size=49          # MiB
+  cache_size=768        # MiB
+  data_size=${2:-1024}  # MiB
+  mbs=$((1024*1024/512)) # MiB to sector
+
+  (
+    set -eo pipefail
+
+    echo "Create beginning of disk..."
+    dd if=/dev/zero bs=1M count=$part_position of="$out" status=none
+    dd if="$boot0" conv=notrunc bs=1k seek=$boot0_position of="$out" status=none
+    dd if="$uboot" conv=notrunc bs=1k seek=$uboot_position of="$out" status=none
+
+    echo "Create boot file system..."
+    dd if=/dev/zero bs=1M count=${boot_size} of="${out}.boot" status=none
+    mkfs.vfat -n BOOT "${out}.boot"
+
+    mcopy -v -m -i "${out}.boot" "$kernel" ::
+    mcopy -v -m -i "${out}.boot" "$ramdisk" ::
+    mcopy -v -m -i "${out}.boot" "$ramdisk_recovery" ::
+    mcopy -v -s -m -i "${out}.boot" "$DEVICE/bootloader/pine64" ::
+    cat <<"EOF" > uEnv.txt
+console=ttyS0,115200n8
+selinux=permissive
+optargs=enforcing=0 cma=384M no_console_suspend
+kernel_filename=kernel
+initrd_filename=ramdisk.img
+hardware=sun50iw1p1
+EOF
+
+    cat <<"EOF" > boot.script
+setenv set_cmdline set bootargs console=${console} ${optargs} androidboot.serialno=${sunxi_serial} androidboot.hardware=${hardware} androidboot.selinux=${selinux} earlyprintk=sunxi-uart,0x01c28000 loglevel=8 root=${root}
+run mmcboot
+EOF
+    mkimage -C none -A arm -T script -d boot.script boot.scr
+    mcopy -v -m -i "${out}.boot" "boot.scr" ::
+    mcopy -m -i "${out}.boot" "uEnv.txt" ::
+    rm -f boot.script boot.scr uEnv.txt
+
+    dd if="${out}.boot" conv=notrunc oflag=append bs=1M of="$out" status=none
+    rm -f "${out}.boot"
+
+    echo "Append system..."
+    simg2img "$ANDROID_PRODUCT_OUT/system.img" "${out}.system"
+    dd if="${out}.system" conv=notrunc oflag=append bs=1M of="$out" status=none
+    system_size=$(stat -c%s "${out}.system")
+    rm -f "${out}.system"
+
+    echo "Append cache..."
+    dd if="${out}.cache" bs=1M count="$cache_size" status=none
+    mkfs.ext4 -q "${out}.cache"
+    dd if="${out}.cache" conv=notrunc oflag=append bs=1M of="$out" status=none
+    rm -f "${out}.cache"
+
+    echo "Append data..."
+    dd if="${out}.data" bs=1M count="$data_size" status=none
+    mkfs.ext4 -q "${out}.data"
+    dd if="${out}.data" conv=notrunc oflag=append bs=1M of="$out" status=none
+    rm -f "${out}.data"
+
+    echo "Partition table..."
+    cat <<EOF | sfdisk "$out"
+$((part_position*mbs)),$((boot_size*mbs)),6
+$(((part_position+boot_size)*mbs)),$((system_size/512)),L
+$(((part_position+boot_size)*mbs+system_size/512)),$((cache_size*mbs)),L
+$(((part_position+boot_size)*mbs+system_size/512)),$((data_size*mbs)),L
+EOF
+
+    size=$(stat -c%s "$out")
+
+    if [[ "$(basename "$out_gz" .gz)" != "$(basename "$out_gz")" ]]; then
+      echo "Compressing image..."
+      gzip "$out"
+      echo "Compressed image: $out (size: $size)."
+    else
+      echo "Uncompressed image: $out (size: $size)."
+    fi
+  )
 }
