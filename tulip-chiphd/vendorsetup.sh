@@ -127,6 +127,7 @@ EOF
     size=$(stat -c%s "$out")
 
     if [[ "$(basename "$out_gz" .gz)" != "$(basename "$out_gz")" ]]; then
+      echo "Compressing image..."
       gzip "$out"
       echo "Compressed image: $out (size: $size)."
     else
