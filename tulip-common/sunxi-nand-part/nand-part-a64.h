@@ -34,7 +34,7 @@
 #define MBR_COPY_NUM        4    									//mbr backup count
 
 #define MBR_START_ADDRESS	(20*1024*1024)										//mbr start address
-#define MBR_SIZE			1024*16									//mbr size
+#define MBR_SIZE			(1024*16)									//mbr size
 #define MBR_RESERVED        (MBR_SIZE - 32 - (MAX_PART_COUNT * 128)) //mbr reserved space
 
 // extern struct __NandDriverGlobal_t NandDriverInfo;

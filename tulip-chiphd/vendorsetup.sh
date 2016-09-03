@@ -51,8 +51,8 @@ sdcard_image() {
 
   boot0_position=8      # KiB
   uboot_position=19096  # KiB
-  part_position=20      # MiB
-  boot_size=50          # MiB
+  part_position=21      # MiB
+  boot_size=49          # MiB
   cache_size=768        # MiB
   data_size=${2:-1024}  # MiB
   mbs=$((1024*1024/512)) # MiB to sector
@@ -113,6 +113,13 @@ $(((part_position+boot_size)*mbs)),$((system_size/512)),L
 $(((part_position+boot_size)*mbs+system_size/512)),$((cache_size*mbs)),L
 $(((part_position+boot_size)*mbs+system_size/512)),$((data_size*mbs)),L
 EOF
+
+    echo "Updating fastboot table..."
+    sunxi-nand-part -f a64 "$out" $(((part_position-20)*mbs)) \
+      "boot $((boot_size*mbs)) 32768" \
+      "system $((system_size/512)) 32768" \
+      "cache $((cache_size*mbs)) 32768" \
+      "data 0 33024"
 
     size=$(stat -c%s "$out")
 
