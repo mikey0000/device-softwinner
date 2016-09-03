@@ -114,12 +114,15 @@ $(((part_position+boot_size)*mbs+system_size/512)),$((cache_size*mbs)),L
 $(((part_position+boot_size)*mbs+system_size/512)),$((data_size*mbs)),L
 EOF
 
-    echo "Updating fastboot table..."
-    sunxi-nand-part -f a64 "$out" $(((part_position-20)*mbs)) \
-      "boot $((boot_size*mbs)) 32768" \
-      "system $((system_size/512)) 32768" \
-      "cache $((cache_size*mbs)) 32768" \
-      "data 0 33024"
+    # TODO: this is broken, because https://github.com/longsleep/u-boot-pine64
+    # doesn't execute sunxi_partition_init
+    #
+    # echo "Updating fastboot table..."
+    # sunxi-nand-part -f a64 "$out" $(((part_position-20)*mbs)) \
+    #   "boot $((boot_size*mbs)) 32768" \
+    #   "system $((system_size/512)) 32768" \
+    #   "cache $((cache_size*mbs)) 32768" \
+    #   "data 0 33024"
 
     size=$(stat -c%s "$out")
 

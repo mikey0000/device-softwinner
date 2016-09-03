@@ -277,6 +277,12 @@ int nand_part (int argc, char **argv, const char *cmd, int fd, int force)
 		printf("\nverifying new partition tables:\n");
 	}
 
+  if(!force && argc == 0) {
+    // checkmbrs were before
+    close(fd);
+    return 0;
+  }
+
   if(checkmbrs(fd)) {
     close(fd);
     return 0;
