@@ -1,12 +1,7 @@
-# Android fstab file.
-#<src>                                         <mnt_point>  <type>  <mnt_flags and options>  <fs_mgr_flags>
-# The filesystem that contains the filesystem checker binary (typically /system) cannot
-# specify MF_CHECK, and must come before any filesystems that do specify MF_CHECK
+/dev/block/mmcblk0p2        /system  ext4    ro,barrier=1                                                            				             wait
+/dev/block/mmcblk0p3        /cache   ext4    noatime,nosuid,nodev,barrier=1,data=ordered,nomblk_io_submit,noauto_da_alloc,errors=panic   wait,check,formattable
+/dev/block/mmcblk0p4        /data    ext4    noatime,nosuid,nodev,barrier=1,data=ordered,nomblk_io_submit,noauto_da_alloc,errors=panic   wait,check,formattable
 
-/dev/block/mmcblk0p7               /system             ext4    ro,barrier=1                                                            				   wait,check
-/dev/block/mmcblk0p10                /cache              ext4    noatime,nosuid,nodev,barrier=1,data=ordered,nomblk_io_submit,noauto_da_alloc,errors=panic   wait,check,formattable
-/dev/block/mmcblk0p13                 /logger             ext4    noatime,nosuid,nodev,barrier=1,data=ordered,nomblk_io_submit,noauto_da_alloc,errors=panic   wait,check,formattable
-/dev/block/mmcblk0p1                /data               ext4    noatime,nosuid,nodev,barrier=1,data=ordered,nomblk_io_submit,noauto_da_alloc,errors=panic   wait,check,formattable,encryptable=/dev/block/by-name/metadata
 /devices/soc.0/1c0f000.sdmmc/mmc_host/mmc*   auto           auto    defaults                                                                voldmanaged=extsd:auto
 /devices/soc.0/1c10000.sdmmc/mmc_host/mmc*   auto           auto    defaults                                                                voldmanaged=extsd:auto
 /devices/soc.0/1c1a000.ehci0-controller/usb* auto           auto    defaults                                                                voldmanaged=usb:auto
