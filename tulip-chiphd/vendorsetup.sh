@@ -124,5 +124,8 @@ sdcard_image() {
 }
 
 ninja_tulip() {
-	prebuilts/ninja/linux-x86/ninja -C "$(gettop)" -f out/build-tulip_chiphd.ninja "$@"
+	(
+		. out/env-tulip_chiphd.sh
+		exec prebuilts/ninja/linux-x86/ninja -C "$(gettop)" -f out/build-tulip_chiphd.ninja "$@"
+	)
 }

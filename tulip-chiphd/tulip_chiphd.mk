@@ -88,6 +88,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # when we start doing 720 as well, will need to stop hardcoding this.
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.sf.lcd_density=160 \
+    persist.sys.hdmi.output_mode=10
 
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.spk_dul.used=false \
