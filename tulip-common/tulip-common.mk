@@ -12,7 +12,9 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_PACKAGES += \
     libion \
-    setmacaddr
+    setmacaddr \
+    sunxi-nand-part
+
 # add for bluetooth addr
 PRODUCT_PROPERTY_OVERRIDES += \
        ro.bt.bdaddr_path=/data/btaddr.txt
