@@ -5,9 +5,9 @@ DEVICE_PACKAGE_OVERLAYS := \
     device/softwinner/common/overlay
 
 PRODUCT_COPY_FILES += \
-    device/softwinner/common/init_parttion.sh:root/sbin/init_parttion.sh \
     device/softwinner/common/init.common.rc:root/init.common.rc \
-	device/softwinner/common/sensors.sh:system/bin/sensors.sh
+    device/softwinner/common/init.sensors.rc:root/init.sensors.rc \
+    device/softwinner/common/ueventd.common.rc:root/ueventd.common.rc \
 
 ifeq ($(TARGET_BUILD_VARIANT),eng)
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -16,11 +16,11 @@ PRODUCT_PROPERTY_OVERRIDES += \
 endif
 
 # preinstall apk
-# PRODUCT_PACKAGES += \
+#PRODUCT_PACKAGES += \
     DragonFire \
     DragonPhone \
-    DragonAging
-	
+    DragonAging \
+
 # usb
 PRODUCT_PACKAGES += \
     com.android.future.usb.accessory
@@ -33,6 +33,11 @@ PRODUCT_PACKAGES += \
     wpa_supplicant \
     wpa_supplicant.conf
 
+#wifi/bt mac
+PRODUCT_PACKAGES += \
+    setmacaddr \
+    setbtmacaddr
+
 # xml
 PRODUCT_COPY_FILES += \
     device/softwinner/common/config/tablet_core_hardware.xml:system/etc/permissions/tablet_core_hardware.xml \
@@ -43,6 +48,7 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.software.sip.voip.xml:system/etc/permissions/android.software.sip.voip.xml \
     frameworks/native/data/etc/android.hardware.usb.accessory.xml:system/etc/permissions/android.hardware.usb.accessory.xml \
     frameworks/native/data/etc/android.hardware.usb.host.xml:system/etc/permissions/android.hardware.usb.host.xml \
+    frameworks/native/data/etc/android.software.midi.xml:system/etc/permissions/android.software.midi.xml
 
 PRODUCT_PACKAGES += \
     sensors.exdroid \
@@ -51,21 +57,10 @@ PRODUCT_PACKAGES += \
     sdc
 
 PRODUCT_PACKAGES += \
-    SoundRecorder \
-    LoggerService \
-    LogCopyService \
-    GooglePinyinIME
+    SoundRecorder
+#    LoggerService \
+#    LogCopyService \
+#    GooglePinyinIME
 
 PRODUCT_COPY_FILES += \
     device/softwinner/common/config/config_mem.ini:root/config_mem.ini
-
-PRODUCT_COPY_FILES += \
-	$(call find-copy-subdir-files,*.so,device/softwinner/common/library-crack/lib32,system/lib)
-
-PRODUCT_COPY_FILES += \
-	$(call find-copy-subdir-files,*.so,device/softwinner/common/library-crack/lib64,system/lib64)
-
-
-# add for start bg service at the same time
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.config.max_starting_bg=8

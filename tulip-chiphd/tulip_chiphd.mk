@@ -15,7 +15,8 @@ PRODUCT_PACKAGES += \
     SuperSU \
     ESFileExplorer \
     VideoPlayer \
-		Bluetooth
+		Bluetooth \
+		ChromeBrowser
 
 PRODUCT_PACKAGES += \
     hdmi_cec.tulip
