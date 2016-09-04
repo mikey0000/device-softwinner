@@ -74,6 +74,11 @@ $(call inherit-product, device/softwinner/common/rild/radio_common.mk)
 #$(call inherit-product, device/softwinner/common/ril_modem/Oviphone/em55/oviphone_em55.mk)
 
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
+		ro.product.model=fugu \
+		ro.product.device=fugu \
+		ro.product.brand=Android
+
+PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
     ro.boot.console=console
 
 PRODUCT_PROPERTY_OVERRIDES += \
