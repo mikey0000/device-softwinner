@@ -3,6 +3,7 @@ $(call inherit-product, build/target/product/full_base.mk)
 $(call inherit-product, device/softwinner/tulip-common/tulip-common.mk)
 $(call inherit-product-if-exists, device/softwinner/tulip-chiphd/modules/modules.mk)
 $(call inherit-product, frameworks/native/build/tablet-7in-xhdpi-2048-dalvik-heap.mk)
+$(call inherit-product, hardware/realtek/bluetooth/firmware/rtlbtfw_cfg.mk)
 
 DEVICE_PACKAGE_OVERLAYS := device/softwinner/tulip-chiphd/overlay \
                            $(DEVICE_PACKAGE_OVERLAYS)
@@ -50,7 +51,10 @@ PRODUCT_COPY_FILES += \
     device/softwinner/tulip-chiphd/configs/tp.idc:system/usr/idc/tp.idc
 
 PRODUCT_COPY_FILES += \
-	device/softwinner/tulip-chiphd/recovery.fstab:system/lib/hw/bluetooth.tulip.so
+     device/softwinner/tulip-chiphd/bluetooth/rtkbt.conf:system/etc/bluetooth/rtkbt.conf
+
+# PRODUCT_COPY_FILES += \
+# 	device/softwinner/tulip-chiphd/recovery.fstab:system/lib/hw/bluetooth.tulip.so
 
 #PRODUCT_COPY_FILES += \
     device/softwinner/tulip-chiphd/hawkview/sensor_list_cfg.ini:system/etc/hawkview/sensor_list_cfg.ini
@@ -63,9 +67,6 @@ PRODUCT_COPY_FILES += \
 $(call inherit-product, device/softwinner/common/rild/radio_common.mk)
 #$(call inherit-product, device/softwinner/common/ril_modem/huawei/mu509/huawei_mu509.mk)
 #$(call inherit-product, device/softwinner/common/ril_modem/Oviphone/em55/oviphone_em55.mk)
-
-#rtl8723bs bt fw and config
-$(call inherit-product, hardware/realtek/bluetooth/rtl8723bs/firmware/rtlbtfw_cfg.mk)
 
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
     ro.boot.console=console
