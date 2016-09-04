@@ -132,11 +132,17 @@ on boot
     chown system system /sys/devices/system/cpu/cpu0/cpufreq/boot_lock
     chmod 0660 /sys/devices/system/cpu/cpu0/cpufreq/boot_lock
 
-    chown system system /sys/devices/soc.0/cpu_budget_cool.17/roomage
-    chmod 0660 /sys/devices/soc.0/cpu_budget_cool.17/roomage
+    chown system system /sys/devices/soc.0/cpu_budget_cool.16/roomage
+    chmod 0660 /sys/devices/soc.0/cpu_budget_cool.16/roomage
 
     chown system system /sys/class/devfreq/dramfreq/adaptive/pause
     chmod 0660 /sys/class/devfreq/dramfreq/adaptive/pause
+
+    write /dev/cpuset/foreground/cpus 0-3
+    write /dev/cpuset/foreground/boost/cpus 0-3
+    write /dev/cpuset/background/cpus 0
+    write /dev/cpuset/system-background/cpus 0-1
+    write /dev/cpuset/top-app/cpus 0-3
 
 on charger
     insmod nand.ko
@@ -146,6 +152,21 @@ on charger
     class_start charger
     write /sys/module/printk/parameters/console_suspend N
     write /proc/sys/kernel/printk 0
+
+    write /sys/devices/system/cpu/cpu0/cpufreq/boot_lock 1
+    write /sys/devices/soc.0/cpu_budget_cool.16/roomage "0 4 0 0 1152000 4 0 0"
+    write /sys/class/devfreq/dramfreq/adaptive/pause 0
+    write /sys/devices/1c40000.gpu/dvfs/android 4
+    write /sys/kernel/autohotplug/enable 1
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor powersave
+
+on property:dev.bootcomplete=1
+    write /sys/devices/system/cpu/cpu0/cpufreq/boot_lock 1 # AFTER_BOOT
+    write /sys/devices/soc.0/cpu_budget_cool.16/roomage "0 4 0 0 1152000 4 0 0" # SCALE_UP_TO_4_CPUS
+    write /sys/class/devfreq/dramfreq/adaptive/pause 1 # DISABLE_DRAM_CHANGE
+    write /sys/devices/1c40000.gpu/dvfs/android 4 # GPU_NORMAL
+    write /sys/kernel/autohotplug/enable 1 # AUTO DISCONNECT
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive # INTERACTIVE
 
 ifeq ($(BOARD_WIDEVINE_OEMCRYPTO_LEVEL), 1)
 service optee /system/bin/tee_supplicant

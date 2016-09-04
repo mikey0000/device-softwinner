@@ -107,6 +107,7 @@ service iprenew_bt-pan /system/bin/dhcpcd -n
 service sayeye /system/bin/sayeye
     class core
     seclabel u:r:healthd:s0
+    disabled
     user system
     group system
     socket sayeye stream 0660 root system

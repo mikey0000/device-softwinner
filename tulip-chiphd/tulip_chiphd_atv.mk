@@ -24,7 +24,8 @@ PRODUCT_PACKAGES += \
     SideloadLauncher
 
 PRODUCT_PACKAGES += \
-    hdmi_cec.tulip
+    hdmi_cec.tulip \
+		power.tulip
 
 PRODUCT_COPY_FILES += \
     device/softwinner/tulip-chiphd/kernel:kernel \
