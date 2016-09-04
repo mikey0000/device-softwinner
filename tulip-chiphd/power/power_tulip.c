@@ -55,8 +55,9 @@
 
 /*  value define */
 #define ROOMAGE_PERF       "816000 4 0 0 1152000 4 0 0 0"
-#define ROOMAGE_NORMAL     "0 0 0 0 1152000 4 0 0 0"
-#define ROOMAGE_VIDEO      "0 0 0 0 1152000 4 0 0 0"
+#define ROOMAGE_NORMAL     "0 2 0 0 1152000 4 0 0 0"
+#define ROOMAGE_VIDEO      "0 4 0 0 1152000 4 0 0 0"
+#define ROOMAGE_LOWPOWER   "0 1 0 0 1152000 4 0 0 0"
 
 /* dram scene value defined */
 #define DRAM_NORMAL         "0"
@@ -76,8 +77,8 @@
 #define GPU_4KLOCALVIDEO    "4\n"
 #define GPU_PERF            "8\n"
 
-#define CPUGOV_INTERACTIVE "interactive"
-#define CPUGOV_POWERSAVE "powersave"
+#define CPUGOV_INTERACTIVE  "interactive"
+#define CPUGOV_POWERSAVE    "powersave"
 
 #define STATE_ON "state=1"
 #define STATE_OFF "state=0"
@@ -102,26 +103,27 @@ static int sysfs_write(int index, const char *path, const char *s)
     if(saved_write[index] == s) {
       return 0;
     }
+    saved_write[index] = s;
 
     char buf[80];
     int len;
     int fd = open(path, O_WRONLY);
 
     if (fd < 0) {
-        strerror_r(errno, buf, sizeof(buf));
-        ALOGE("Error opening %s: %s\n", path, buf);
-        return -1;
+      strerror_r(errno, buf, sizeof(buf));
+      ALOGE("Error opening %s: %s\n", path, buf);
+      return -1;
     }
 
     len = write(fd, s, strlen(s));
     if (len < 0) {
-        strerror_r(errno, buf, sizeof(buf));
-        ALOGE("Error writing to %s: %s\n", path, buf);
-        return -1;
+      close(fd);
+      strerror_r(errno, buf, sizeof(buf));
+      ALOGE("Error writing %s to %s: %s:\n", s, path, buf);
+      return -1;
     }
 
     close(fd);
-    saved_write[index] = s;
     return 0;
 }
 
@@ -268,7 +270,7 @@ static void power_hint( __attribute__((unused)) struct power_module *module,
 
         case POWER_HINT_LOW_POWER:
              pthread_mutex_lock(&low_power_mode_lock);
-             set_state(ROOMAGE_NORMAL, GPU_NORMAL, CPUGOV_POWERSAVE);
+             set_state(ROOMAGE_LOWPOWER, GPU_NORMAL, CPUGOV_POWERSAVE);
              pthread_mutex_unlock(&low_power_mode_lock);
              break;
         default:
