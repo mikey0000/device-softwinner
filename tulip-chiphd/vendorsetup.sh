@@ -140,10 +140,11 @@ tulip_sync() {
   (
     set -xe
     adb wait-for-device
-    adb remount
-    if ! adb shell mountpoint /bootloader; then
-      adb shell mount -t vfat -o sync /dev/block/mmcblk0p1 /bootloader
+    if ! adb shell mountpoint /bootloader || ! adb shell touch /bootloader; then
+      adb shell umount /bootloader || true
+      adb shell mount -t vfat /dev/block/mmcblk0p1 /bootloader
     fi
+    adb remount
     adb sync system
     for i in kernel ramdisk.img ramdisk-recovery.img; do
       adb push $ANDROID_PRODUCT_OUT/$i /bootloader/
