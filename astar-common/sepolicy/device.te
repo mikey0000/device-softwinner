@@ -1,2 +1,0 @@
-type disp_device, dev_type;
-type cedar_device, dev_type;
