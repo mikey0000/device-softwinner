@@ -128,7 +128,7 @@ EOF
 
     if [[ "$(basename "$out_gz" .gz)" != "$(basename "$out_gz")" ]]; then
       echo "Compressing image..."
-      gzip "$out"
+      pigz "$out"
       echo "Compressed image: $out (size: $size)."
     else
       echo "Uncompressed image: $out (size: $size)."
