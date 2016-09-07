@@ -51,6 +51,9 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.software.live_tv.xml:system/etc/permissions/android.software.live_tv.xml
 
 PRODUCT_COPY_FILES += \
+		frameworks/av/media/libstagefright/data/media_codecs_google_tv.xml:system/etc/media_codecs_google_tv.xml \
+
+PRODUCT_COPY_FILES += \
     device/softwinner/tulip-chiphd/configs/camera.cfg:system/etc/camera.cfg \
     device/softwinner/tulip-chiphd/configs/gsensor.cfg:system/usr/gsensor.cfg \
     device/softwinner/tulip-chiphd/configs/media_profiles.xml:system/etc/media_profiles.xml \
