@@ -8,7 +8,6 @@
 /dev/block/mmcblk0p3           /cache              ext4    noatime,nosuid,nodev,nomblk_io_submit,barrier=1                         wait,check,formattable
 /dev/block/mmcblk0p4           /data               ext4    noatime,nosuid,nodev,nomblk_io_submit,barrier=1,noauto_da_alloc         wait,check,formattable
 
-/devices/soc.0/1c0f000.sdmmc/mmc_host   auto                vfat    defaults                                                                wait,check,voldmanaged=extsd:auto
 /devices/soc.0/1c10000.sdmmc/mmc_host   auto                vfat    defaults                                                                wait,check,voldmanaged=extsd:auto
 /devices/soc.0/usbc0.5                  auto                vfat    defaults                                                                wait,check,voldmanaged=usbhost:auto
 /devices/soc.0/1c1a000.ehci0-controller auto                vfat    defaults                                                                wait,check,voldmanaged=usbhost:auto
