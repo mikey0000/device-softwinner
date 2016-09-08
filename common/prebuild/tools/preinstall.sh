@@ -5,13 +5,11 @@ BUSYBOX="/sbin/busybox"
 if [ ! -e /data/system.notfirstrun ] ; then
     echo "do preinstall job"
 
-    /system/bin/sh /system/bin/pm preinstall /system/preinstall
-    /system/bin/sh /system/bin/pm preinstall /sdcard/preinstall
+    for i in /system/preinstall/*.apk; do
+      /system/bin/pm installl $i
+    done
 
     $BUSYBOX touch /data/system.notfirstrun
 
     echo "preinstall ok"
-else
-    echo "do nothing"
 fi
-
