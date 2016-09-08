@@ -129,10 +129,3 @@ service iprenew_bt-pan /system/bin/dhcpcd -n
     class main
     disabled
     oneshot
-
-service sayeye /system/bin/sayeye
-    class core
-    user system
-    group system
-    socket sayeye stream 0660 root system
-    ioprio be 2

@@ -20,7 +20,7 @@ endif
     DragonFire \
     DragonPhone \
     DragonAging
-	
+
 # usb
 PRODUCT_PACKAGES += \
     com.android.future.usb.accessory
@@ -47,7 +47,6 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     sensors.exdroid \
     keystore.exdroid \
-    sayeye \
     sdc
 
 PRODUCT_PACKAGES += \

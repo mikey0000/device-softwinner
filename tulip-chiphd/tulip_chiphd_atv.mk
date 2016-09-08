@@ -1,6 +1,7 @@
 $(call inherit-product, device/softwinner/tulip-common/tulip_64_bit.mk)
 $(call inherit-product, device/google/atv/products/atv_generic.mk)
 $(call inherit-product, device/softwinner/tulip-common/tulip-common.mk)
+$(call inherit-product, frameworks/native/build/tablet-7in-xhdpi-2048-dalvik-heap.mk)
 $(call inherit-product-if-exists, device/softwinner/tulip-chiphd/modules/modules.mk)
 
 DEVICE_PACKAGE_OVERLAYS := device/softwinner/tulip-chiphd/overlay \
