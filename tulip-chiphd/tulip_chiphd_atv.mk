@@ -94,7 +94,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # xhdpi, while we are hardcoding the 1080 resolution.
 # when we start doing 720 as well, will need to stop hardcoding this.
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.sf.lcd_density=320 \
+    ro.sf.lcd_density.720=213 \
+    ro.sf.lcd_density.1080=320 \
+    ro.sf.lcd_density.2160=640
 
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.spk_dul.used=false \
