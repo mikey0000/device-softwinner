@@ -71,6 +71,12 @@ $(call inherit-product, device/softwinner/common/rild/radio_common.mk)
 #rtl8723bs bt fw and config
 $(call inherit-product, hardware/realtek/bluetooth/rtl8723bs/firmware/rtlbtfw_cfg.mk)
 
+PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
+	ro.product.model=fugu \
+	ro.product.brand=Android \
+	ro.product.device=fugu \
+	ro.product.name=fugu
+
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.product.8723b_bt.used=true
 
