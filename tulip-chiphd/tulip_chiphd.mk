@@ -8,6 +8,10 @@ $(call inherit-product, hardware/realtek/bluetooth/firmware/rtlbtfw_cfg.mk)
 DEVICE_PACKAGE_OVERLAYS := device/softwinner/tulip-chiphd/overlay \
                            $(DEVICE_PACKAGE_OVERLAYS)
 
+GAPPS_VARIANT := micro
+GAPPS_FORCE_PACKAGE_OVERRIDES := true
+GAPPS_FORCE_BROWSER_OVERRIDES := true
+
 PRODUCT_PACKAGES += \
     Launcher3
 
@@ -15,13 +19,11 @@ PRODUCT_PACKAGES += \
     SuperSU \
     ESFileExplorer \
     VideoPlayer \
-		Bluetooth \
-		ChromeBrowser \
-		mtop
+    Bluetooth
 
 PRODUCT_PACKAGES += \
     hdmi_cec.tulip \
-		power.tulip
+    power.tulip
 
 PRODUCT_COPY_FILES += \
     device/softwinner/tulip-chiphd/kernel:kernel \
@@ -132,6 +134,7 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.software.app_widgets.xml:system/etc/permissions/android.software.app_widgets.xml
 
 $(call inherit-product-if-exists, vendor/google/products/gms_5.1r4_db.mk)
+$(call inherit-product, vendor/google/build/opengapps-packages.mk)
 
 PRODUCT_BRAND := Allwinner
 PRODUCT_NAME := tulip_chiphd

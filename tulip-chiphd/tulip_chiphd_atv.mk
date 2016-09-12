@@ -8,24 +8,19 @@ $(call inherit-product, hardware/realtek/bluetooth/firmware/rtlbtfw_cfg.mk)
 DEVICE_PACKAGE_OVERLAYS := device/softwinner/tulip-chiphd/overlay \
                            $(DEVICE_PACKAGE_OVERLAYS)
 
-$(call inherit-product, vendor/google/atv/atv-vendor.mk)
+GAPPS_VARIANT := nano
 
-PRODUCT_PACKAGES += \
-    AtvRemoteService \
-    LeanbackLauncher \
-		FrameworkPackageStubs \
-    TV
+$(call inherit-product, vendor/google/atv-build/atv-vendor.mk)
 
 PRODUCT_PACKAGES += \
     SuperSU \
     ESFileExplorer \
-    VideoPlayer \
     Bluetooth \
     SideloadLauncher
 
 PRODUCT_PACKAGES += \
     hdmi_cec.tulip \
-		power.tulip
+    power.tulip
 
 PRODUCT_COPY_FILES += \
     device/softwinner/tulip-chiphd/kernel:kernel \
@@ -73,11 +68,6 @@ PRODUCT_COPY_FILES += \
 # bootanimation
 PRODUCT_COPY_FILES += \
     device/softwinner/tulip-chiphd/media/bootanimation.zip:system/media/bootanimation.zip
-
-# Radio Packages and Configuration Flie
-$(call inherit-product, device/softwinner/common/rild/radio_common.mk)
-#$(call inherit-product, device/softwinner/common/ril_modem/huawei/mu509/huawei_mu509.mk)
-#$(call inherit-product, device/softwinner/common/ril_modem/Oviphone/em55/oviphone_em55.mk)
 
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
 		ro.product.model=fugu \
