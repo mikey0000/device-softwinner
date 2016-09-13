@@ -4,6 +4,7 @@ $(call inherit-product, device/softwinner/tulip-common/tulip-common.mk)
 $(call inherit-product-if-exists, device/softwinner/tulip-chiphd/modules/modules.mk)
 $(call inherit-product, frameworks/native/build/tablet-7in-xhdpi-2048-dalvik-heap.mk)
 $(call inherit-product, hardware/realtek/bluetooth/firmware/rtlbtfw_cfg.mk)
+$(call inherit-product, device/softwinner/tulip-chiphd/device.mk)
 
 DEVICE_PACKAGE_OVERLAYS := device/softwinner/tulip-chiphd/overlay \
                            $(DEVICE_PACKAGE_OVERLAYS)
@@ -13,6 +14,7 @@ GAPPS_VARIANT := nano
 $(call inherit-product, vendor/google/atv-build/atv-vendor.mk)
 
 PRODUCT_PACKAGES += \
+    Provision \
     SuperSU \
     ESFileExplorer \
     Bluetooth \

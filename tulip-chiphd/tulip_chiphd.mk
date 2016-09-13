@@ -4,6 +4,7 @@ $(call inherit-product, device/softwinner/tulip-common/tulip-common.mk)
 $(call inherit-product-if-exists, device/softwinner/tulip-chiphd/modules/modules.mk)
 $(call inherit-product, frameworks/native/build/tablet-7in-xhdpi-2048-dalvik-heap.mk)
 $(call inherit-product, hardware/realtek/bluetooth/firmware/rtlbtfw_cfg.mk)
+$(call inherit-product, device/softwinner/tulip-chiphd/device.mk)
 
 DEVICE_PACKAGE_OVERLAYS := device/softwinner/tulip-chiphd/overlay \
                            $(DEVICE_PACKAGE_OVERLAYS)
@@ -26,7 +27,6 @@ PRODUCT_PACKAGES += \
     power.tulip
 
 PRODUCT_COPY_FILES += \
-    device/softwinner/tulip-chiphd/kernel:kernel \
     device/softwinner/tulip-chiphd/fstab.sun50iw1p1:root/fstab.sun50iw1p1 \
     device/softwinner/tulip-chiphd/init.sun50iw1p1.rc:root/init.sun50iw1p1.rc \
     device/softwinner/tulip-chiphd/init.recovery.sun50iw1p1.rc:root/init.recovery.sun50iw1p1.rc \

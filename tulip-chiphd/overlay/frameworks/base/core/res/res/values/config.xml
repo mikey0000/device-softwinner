@@ -45,7 +45,7 @@
     <string-array translatable="false" name="config_tether_wifi_regexs">
 	<item>"wlan0"</item>
     </string-array>
-		
+
     <!-- List of regexpressions describing the interface (if any) that represent tetherable
          bluetooth interfaces.  If the device doesn't want to support tethering over bluetooth this
          should be empty. -->
@@ -53,7 +53,7 @@
     <string-array translatable="false" name="config_tether_bluetooth_regexs">
         <item>"bt-pan"</item>
     </string-array>
-    
+
     <!-- XXXXX NOTE THE FOLLOWING RESOURCES USE THE WRONG NAMING CONVENTION.
          Please don't copy them, copy anything else. -->
 
@@ -168,4 +168,17 @@
     <!-- Switch for lockscreen rotation by -->
     <bool name="config_enableLockScreenRotation">true</bool>
 
+    <!-- Enable overlay for all location components. -->
+    <bool name="config_enableNetworkLocationOverlay" translatable="false">true</bool>
+    <bool name="config_enableFusedLocationOverlay" translatable="false">true</bool>
+    <bool name="config_enableGeocoderOverlay" translatable="false">true</bool>
+    <bool name="config_enableGeofenceOverlay" translatable="false">true</bool>
+    <!--
+       Sets the package names whose certificates should be used to
+       verify location providers are allowed to be loaded.
+    -->
+    <string-array name="config_locationProviderPackageNames" translatable="false">
+        <item>com.google.android.gms</item>
+        <item>com.android.location.fused</item>
+    </string-array>
 </resources>
