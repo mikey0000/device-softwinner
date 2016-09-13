@@ -4,14 +4,11 @@ $(call inherit-product, device/softwinner/tulip-common/tulip-common.mk)
 $(call inherit-product-if-exists, device/softwinner/tulip-chiphd/modules/modules.mk)
 $(call inherit-product, frameworks/native/build/tablet-7in-xhdpi-2048-dalvik-heap.mk)
 $(call inherit-product, hardware/realtek/bluetooth/firmware/rtlbtfw_cfg.mk)
-$(call inherit-product, device/softwinner/tulip-chiphd/device.mk)
 
 DEVICE_PACKAGE_OVERLAYS := device/softwinner/tulip-chiphd/overlay \
                            $(DEVICE_PACKAGE_OVERLAYS)
 
 GAPPS_VARIANT := nano
-
-$(call inherit-product, vendor/google/atv-build/atv-vendor.mk)
 
 PRODUCT_PACKAGES += \
     Provision \
@@ -133,6 +130,7 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.software.app_widgets.xml:system/etc/permissions/android.software.app_widgets.xml
 
 $(call inherit-product-if-exists, vendor/google/products/gms_5.1r4_db.mk)
+$(call inherit-product, vendor/google/atv-build/atv-vendor.mk)
 
 PRODUCT_BRAND := Allwinner
 PRODUCT_NAME := tulip_chiphd_atv
