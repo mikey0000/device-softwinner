@@ -23,6 +23,7 @@
 #include "libfacedetection/SmileEyeBlinkAPI.h"
 #include "libfacedetection/ApperceivePeopleApi.h"
 #include "CameraPlatform.h"
+#include <sunxi_camera_android.h>
 
 #ifdef __PLATFORM_A64__
 #include <sunxi_camera.h>
@@ -432,19 +433,19 @@ public:
     static const char FACING_BACK[];
     static const char FACING_FRONT[];
 
-    struct FrameFaceData                     mFrameFaceData;     
+    struct FrameFaceData                     mFrameFaceData;
     struct FacePosition                      mFacePosition;
     unsigned char*                           mFrameData;
-	
+
 	unsigned char*                           mSmartData;
 
-	int mPreviewRotation;                 
-    int mPreviewWidth;    
-	int mPreviewHeight;  
+	int mPreviewRotation;
+    int mPreviewWidth;
+	int mPreviewHeight;
 
 	bool mSmileDetectionCmdEnable;
 	bool mBlinkDetectionCmdEnable;
-	
+
 	bool mSmileDetectionEnable;
 	bool mBlinkDetectionEnable;
 	bool mSmartDetectionEnable;
@@ -464,7 +465,7 @@ public:
 	void initDefaultParameters();
 
 	void notifyPictureMsg(const void* frame);
-	
+
 	void setNewCrop(Rect * rect);
 	int setAutoFocusRange();
 	int getCurrentFaceFrame(void* frame, int* width, int* height);
@@ -520,7 +521,7 @@ protected:
 	SmileDetectionDev *				mSmileDetection;
 	EyeBlinkDetectionDev *          mBlinkDetection;
 	ApperceivePeopleDev *           mSmartDetection;
-	
+
 	int								mFDOriention[4];
 	Rect							mFrameRectCrop;		// current frame buffer crop for focus
 	char							mFocusAreasStr[32];
@@ -533,7 +534,7 @@ protected:
 		CMD_QUEUE_SET_FOCUS_MODE,
 		CMD_QUEUE_SET_FOCUS_AREA,
 		CMD_QUEUE_SET_EXPOSURE_COMPENSATION,
-		
+
 		CMD_QUEUE_START_FACE_DETECTE,
 		CMD_QUEUE_STOP_FACE_DETECTE,
 		CMD_QUEUE_START_SMILE_DETECTE,
@@ -544,14 +545,14 @@ protected:
 		CMD_QUEUE_TAKE_PICTURE,
 		CMD_QUEUE_PICTURE_MSG,
 		CMD_QUEUE_STOP_CONTINUOUSSNAP,
-		
+
 		CMD_QUEUE_SET_FOCUS_STATUS,
 
 		CMD_QUEUE_MAX
 	}CMD_QUEUE;
 
 	OSAL_QUEUE						mQueueCommand;
-	
+
 	typedef struct Queue_Element_t {
 		CMD_QUEUE cmd;
 		unsigned long data;
@@ -586,7 +587,7 @@ protected:
         }
     };
 	sp<DoCommandThread>				mCommandThread;
-	
+
 	pthread_mutex_t 				mCommandMutex;
 	pthread_cond_t					mCommandCond;
 
@@ -617,7 +618,7 @@ protected:
         }
     };
 	sp<DoAutoFocusThread>			mAutoFocusThread;
-	
+
 	pthread_mutex_t 				mAutoFocusMutex;
 	pthread_cond_t					mAutoFocusCond;
 	bool							mAutoFocusThreadExit;
@@ -666,8 +667,8 @@ protected:
         }
     };
 	sp<DoFaceDetectionThread>	    mFaceDetectionThread;
-	
-public: 
+
+public:
 	class DoSmartThread : public Thread {
         CameraHardware* mCameraHardware;
 		ThreadState		mThreadStatus;
@@ -695,7 +696,7 @@ public:
         }
     };
 	sp<DoSmartThread>	    mSmartThread;
-	
+
 	pthread_mutex_t 				mFaceDetectionMutex;
 	pthread_cond_t					mFaceDetectionCond;
 	bool							mFaceDetectionThreadExit;
@@ -708,7 +709,7 @@ public:
 	pthread_mutex_t 				mSmartMutex;
 	pthread_cond_t					mSmartCond;
 	bool							mSmartThreadExit;
-	int                             mSmartMode;  
+	int                             mSmartMode;
 	int                             mSmartDiscardFrameNum;
 };
 

@@ -8,7 +8,7 @@ DEVICE_PACKAGE_OVERLAYS := \
 PRODUCT_PACKAGES += \
     lights.tulip \
     hwcomposer.tulip \
-    # camera.tulip # missing libMemAdapter
+    camera.tulip
 
 PRODUCT_PACKAGES += \
     libion \

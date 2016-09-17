@@ -8,6 +8,8 @@
 
 #include <cutils/properties.h>
 
+#include <sunxi_camera_android.h>
+
 #include "V4L2CameraDevice2.h"
 #include "CallbackNotifier.h"
 
@@ -181,7 +183,7 @@ static void NV12ToYVU420(void* psrc, void* pdst, int width, int height)
 	uint8_t* pdst_y = (uint8_t*)pdst;
 	uint8_t* psrc_uv = (uint8_t*)psrc + width * height;
 	uint8_t* pdst_uv = (uint8_t*)pdst + width * height;
-	
+
 	for(int i = 0; i < height; i++)
 	{
 		for (int j = 0; j < width; j++)
@@ -189,7 +191,7 @@ static void NV12ToYVU420(void* psrc, void* pdst, int width, int height)
 			*(uint8_t*)(pdst_y + i * width + j) = *(uint8_t*)(psrc_y + i * width + j);
 		}
 	}
-	
+
 	for(int i = 0; i < height / 2; i++)
 	{
 		for (int j = 0; j < width / 2; j++)
@@ -198,7 +200,7 @@ static void NV12ToYVU420(void* psrc, void* pdst, int width, int height)
 			*(uint8_t*)(pdst_uv + (width / 2) * (height / 2) + i * width / 2 + j) = *(uint8_t*)(psrc_uv + i * width + j * 2 + 1);
 		}
 	}
-	
+
 }
 
 static void NV21ToYVU420(void* psrc, void* pdst, int width, int height)
@@ -207,7 +209,7 @@ static void NV21ToYVU420(void* psrc, void* pdst, int width, int height)
 	uint8_t* pdst_y = (uint8_t*)pdst;
 	uint8_t* psrc_uv = (uint8_t*)psrc + width * height;
 	uint8_t* pdst_uv = (uint8_t*)pdst + width * height;
-	
+
 	for(int i = 0; i < height; i++)
 	{
 		for (int j = 0; j < width; j++)
@@ -231,7 +233,7 @@ static void YVU420ToNV21(void* psrc, void* pdst, int width, int height)
 	uint8_t* pdst_y = (uint8_t*)pdst;
 	uint8_t* psrc_uv = (uint8_t*)psrc + width * height;
 	uint8_t* pdst_uv = (uint8_t*)pdst + width * height;
-	
+
 	for(int i = 0; i < height; i++)
 	{
 		for (int j = 0; j < width; j++)
@@ -248,7 +250,7 @@ static void YVU420ToNV21(void* psrc, void* pdst, int width, int height)
 			*(uint8_t*)(pdst_uv + i * width + j * 2) = *(uint8_t*)(psrc_uv + (width / 2) * (height / 2) + i * width / 2 + j);
 		}
 	}
-	
+
 }
 
 static bool yuv420spDownScale(void* psrc, void* pdst, int src_w, int src_h, int dst_w, int dst_h)
@@ -257,24 +259,24 @@ static bool yuv420spDownScale(void* psrc, void* pdst, int src_w, int src_h, int 
 	char * pdst_y = (char *)pdst;
 	char * psrc_uv = (char *)psrc + src_w * src_h;
 	char * pdst_uv = (char *)pdst + dst_w * dst_h;
-	
+
 	int scale = 1;
 	int scale_w = src_w / dst_w;
 	int scale_h = src_h / dst_h;
 	int h, w;
-	
+
 	if (dst_w > src_w
 		|| dst_h > src_h)
 	{
 		LOGE("error size, %dx%d -> %dx%d\n", src_w, src_h, dst_w, dst_h);
 		return false;
 	}
-	
+
 	if (scale_w == scale_h)
 	{
 		scale = scale_w;
 	}
-	
+
 	LOGV("scale = %d\n", scale);
 
 	if (scale == 1)
@@ -296,10 +298,10 @@ static bool yuv420spDownScale(void* psrc, void* pdst, int src_w, int src_h, int 
 				memcpy((char*)pdst_uv + h * dst_w, (char*)psrc_uv + h * src_w, dst_w);
 			}
 		}
-		
+
 		return true;
 	}
-	
+
 	for (h = 0; h < dst_h; h++)
 	{
 		for (w = 0; w < dst_w; w++)
@@ -314,7 +316,7 @@ static bool yuv420spDownScale(void* psrc, void* pdst, int src_w, int src_h, int 
 			*((short*)(pdst_uv + h * dst_w + w)) = *((short*)(psrc_uv + h * scale * src_w + w * scale));
 		}
 	}
-	
+
 	return true;
 }
 
@@ -356,7 +358,7 @@ CallbackNotifier::CallbackNotifier()
 	memset(mContinuousFd,0,sizeof(mContinuousFd));
 	memset(mGpsMethod, 0, sizeof(mGpsMethod));
 	memset(mCallingProcessName, 0, sizeof(mCallingProcessName));
-	
+
 	strcpy(mExifMake, "MID MAKE");		// default
 	strcpy(mExifModel, "MID MODEL");	// default
 	memset(mDateTime, 0, sizeof(mDateTime));
@@ -398,7 +400,7 @@ void CallbackNotifier::setCallbacks(camera_notify_callback notify_cb,
 	}
 
 	mSaveThreadExited = false;
-	
+
 	// init picture thread
 	mSavePictureThread = new DoSavePictureThread(this);
 	pthread_mutex_init(&mSavePictureMutex, NULL);
@@ -496,16 +498,16 @@ void CallbackNotifier::cleanupCBNotifier()
 			pthread_cond_wait(&mSavePictureCond, &mSavePictureMutex);
 		}
 		pthread_mutex_unlock(&mSavePictureMutex);
-		
+
 		mSavePictureThread.clear();
 		mSavePictureThread = 0;
-		
+
 		pthread_mutex_destroy(&mSavePictureMutex);
 		pthread_cond_destroy(&mSavePictureCond);
 	}
 	pthread_mutex_destroy(&mPictureFdMutex);
 	pthread_cond_destroy(&mPictureFdCond);
-	
+
     Mutex::Autolock locker(&mObjectLock);
     mMessageEnabler = 0;
     mNotifyCB = NULL;
@@ -550,34 +552,34 @@ void CallbackNotifier::onNextFrameAvailable(const void* frame,
 void CallbackNotifier::onNextFrameHW(const void* frame)
 {
 	V4L2BUF_t * pbuf = (V4L2BUF_t*)frame;
-	
-	if (isMessageEnabled(CAMERA_MSG_VIDEO_FRAME) && isVideoRecordingEnabled()) 
+
+	if (isMessageEnabled(CAMERA_MSG_VIDEO_FRAME) && isVideoRecordingEnabled())
 	{
         camera_memory_t* cam_buff = mGetMemoryCB(-1, sizeof(V4L2BUF_t), 1, NULL);
-        if (NULL != cam_buff && NULL != cam_buff->data) 
+        if (NULL != cam_buff && NULL != cam_buff->data)
 		{
 			pbuf->refCnt++;
             memcpy(cam_buff->data, frame, sizeof(V4L2BUF_t));
             mDataCBTimestamp(pbuf->timeStamp, CAMERA_MSG_VIDEO_FRAME,
                                cam_buff, 0, mCallbackCookie);
 			cam_buff->release(cam_buff);
-        } 
-		else 
+        }
+		else
 		{
             LOGE("%s: Memory failure in CAMERA_MSG_VIDEO_FRAME", __FUNCTION__);
         }
     }
 
-    if (isMessageEnabled(CAMERA_MSG_PREVIEW_FRAME)) 
+    if (isMessageEnabled(CAMERA_MSG_PREVIEW_FRAME))
 	{
         camera_memory_t* cam_buff = mGetMemoryCB(-1, sizeof(V4L2BUF_t), 1, NULL);
-        if (NULL != cam_buff && NULL != cam_buff->data) 
+        if (NULL != cam_buff && NULL != cam_buff->data)
 		{
             memcpy(cam_buff->data, frame, sizeof(V4L2BUF_t));
 			mDataCB(CAMERA_MSG_PREVIEW_FRAME, cam_buff, 0, NULL, mCallbackCookie);
 			cam_buff->release(cam_buff);
-        } 
-		else 
+        }
+		else
 		{
             LOGE("%s: Memory failure in CAMERA_MSG_PREVIEW_FRAME", __FUNCTION__);
         }
@@ -634,11 +636,11 @@ bool CallbackNotifier::takePicture(const void* frame, bool is_continuous)
 
 	getCurrentDateTime();
 
-	// 
+	//
 	strcpy(jpeg_enc.CameraMake, mExifMake);
 	strcpy(jpeg_enc.CameraModel, mExifModel);
 	strcpy(jpeg_enc.DateTime, mDateTime);
-	
+
 	jpeg_enc.thumbWidth		= mThumbWidth;
 	jpeg_enc.thumbHeight	= mThumbHeight;
 	jpeg_enc.whitebalance   = mWhiteBalance;
@@ -688,10 +690,10 @@ bool CallbackNotifier::takePicture(const void* frame, bool is_continuous)
 	{
 		jpeg_enc.enable_crop		= 0;
 	}
-	
+
 	LOGV("addrY: %x, src: %dx%d, pic: %dx%d, quality: %d, rotate: %d, Gps method: %s, \
-		thumbW: %d, thumbH: %d, thubmFactor: %d, crop: [%d, %d, %d, %d]", 
-		jpeg_enc.addrY, 
+		thumbW: %d, thumbH: %d, thubmFactor: %d, crop: [%d, %d, %d, %d]",
+		jpeg_enc.addrY,
 		jpeg_enc.src_w, jpeg_enc.src_h,
 		jpeg_enc.pic_w, jpeg_enc.pic_h,
 		jpeg_enc.quality, jpeg_enc.rotate,
@@ -703,7 +705,7 @@ bool CallbackNotifier::takePicture(const void* frame, bool is_continuous)
 		jpeg_enc.crop_y,
 		jpeg_enc.crop_w,
 		jpeg_enc.crop_h);
-	
+
 	pNode = mBufferList->allocBuffer(-1, mPictureWidth * mPictureHeight);
 	if (pNode == NULL)
 	{
@@ -735,11 +737,11 @@ bool CallbackNotifier::takePicture(const void* frame, bool is_continuous)
 		mBufferList->push(pNode);
 
 		// cb number of pictures
-		if (isMessageEnabled(CAMERA_MSG_CONTINUOUSSNAP)) 
+		if (isMessageEnabled(CAMERA_MSG_CONTINUOUSSNAP))
 		{
 			mNotifyCB(CAMERA_MSG_CONTINUOUSSNAP, mSavePictureCnt, 0, mCallbackCookie);
 	    }
-		
+
 		pthread_cond_signal(&mSavePictureCond);
 
 		mSavePictureCnt++;
@@ -759,13 +761,13 @@ bool CallbackNotifier::takePicture(const void* frame, bool is_continuous)
 		else
 		{
 			camera_memory_t* jpeg_buff = mGetMemoryCB(-1, bufSize, 1, NULL);
-			if (NULL != jpeg_buff && NULL != jpeg_buff->data) 
+			if (NULL != jpeg_buff && NULL != jpeg_buff->data)
 			{
-				memcpy(jpeg_buff->data, (uint8_t *)pOutBuf, bufSize); 
+				memcpy(jpeg_buff->data, (uint8_t *)pOutBuf, bufSize);
 				mDataCB(CAMERA_MSG_COMPRESSED_IMAGE, jpeg_buff, 0, NULL, mCallbackCookie);
 				jpeg_buff->release(jpeg_buff);
-			} 
-			else 
+			}
+			else
 			{
 				LOGE("%s: Memory failure in CAMERA_MSG_COMPRESSED_IMAGE", __FUNCTION__);
 			}
@@ -773,7 +775,7 @@ bool CallbackNotifier::takePicture(const void* frame, bool is_continuous)
 			mBufferList->releaseBuffer(pNode);
 		}
 	}
-	
+
 	DBG_TIME_DIFF("photo end");
 	LOGV("taking photo end");
 	return true;
@@ -783,7 +785,7 @@ void CallbackNotifier::onNextFrameHW(const void* frame)
 {
 	V4L2BUF_t * pbuf = (V4L2BUF_t*)frame;
 	VencInputBuffer sInputBuffer;
-	
+
 	int buffer_type = kMetadataBufferTypeCameraSource;//matadataType
 	memset(&sInputBuffer, 0, sizeof(VencInputBuffer));
 
@@ -807,36 +809,36 @@ void CallbackNotifier::onNextFrameHW(const void* frame)
 		sInputBuffer.sCropInfo.nHeight = pbuf->crop_rect.height;
 	}
 
-	if (isMessageEnabled(CAMERA_MSG_VIDEO_FRAME) && isVideoRecordingEnabled()) 
+	if (isMessageEnabled(CAMERA_MSG_VIDEO_FRAME) && isVideoRecordingEnabled())
 	{
         camera_memory_t* cam_buff = mGetMemoryCB(-1, (sizeof(VencInputBuffer) + 4), 1, NULL);
-        if (NULL != cam_buff && NULL != cam_buff->data) 
+        if (NULL != cam_buff && NULL != cam_buff->data)
 		{
 			pbuf->refCnt++;
 			memcpy(cam_buff->data, &buffer_type, 4);
             memcpy((char *)cam_buff->data + 4, &sInputBuffer, sizeof(VencInputBuffer));
-			
+
             mDataCBTimestamp(pbuf->timeStamp, CAMERA_MSG_VIDEO_FRAME,
                                cam_buff, 0, mCallbackCookie);
 			cam_buff->release(cam_buff);
-        } 
-		else 
+        }
+		else
 		{
             LOGE("%s: Memory failure in CAMERA_MSG_VIDEO_FRAME", __FUNCTION__);
         }
     }
 
-    if (isMessageEnabled(CAMERA_MSG_PREVIEW_FRAME)) 
+    if (isMessageEnabled(CAMERA_MSG_PREVIEW_FRAME))
 	{
         camera_memory_t* cam_buff = mGetMemoryCB(-1, (sizeof(VencInputBuffer) + 4), 1, NULL);
-        if (NULL != cam_buff && NULL != cam_buff->data) 
+        if (NULL != cam_buff && NULL != cam_buff->data)
 		{
 			memcpy(cam_buff->data, &buffer_type, 4);
             memcpy((char *)cam_buff->data + 4, &sInputBuffer, sizeof(VencInputBuffer));
 			mDataCB(CAMERA_MSG_PREVIEW_FRAME, cam_buff, 0, NULL, mCallbackCookie);
 			cam_buff->release(cam_buff);
-        } 
-		else 
+        }
+		else
 		{
             LOGE("%s: Memory failure in CAMERA_MSG_PREVIEW_FRAME", __FUNCTION__);
         }
@@ -892,11 +894,11 @@ bool CallbackNotifier::takePicture(const void* frame, bool is_continuous)
 
 	getCurrentDateTime();
 
-	// 
+	//
 	strcpy(jpeg_enc.CameraMake, mExifMake);
 	strcpy(jpeg_enc.CameraModel, mExifModel);
 	strcpy(jpeg_enc.DateTime, mDateTime);
-	
+
 	jpeg_enc.thumbWidth		= mThumbWidth;
 	jpeg_enc.thumbHeight	= mThumbHeight;
 	jpeg_enc.whitebalance   = mWhiteBalance;
@@ -929,10 +931,10 @@ bool CallbackNotifier::takePicture(const void* frame, bool is_continuous)
 	{
 		jpeg_enc.enable_crop		= 0;
 	}
-	
+
 	LOGV("addrY: %x, src: %dx%d, pic: %dx%d, quality: %d, rotate: %d, Gps method: %s,\
-		thumbW: %d, thumbH: %d, thubmFactor: %d, crop: [%d, %d, %d, %d]", 
-		jpeg_enc.addrY, 
+		thumbW: %d, thumbH: %d, thubmFactor: %d, crop: [%d, %d, %d, %d]",
+		jpeg_enc.addrY,
 		jpeg_enc.src_w, jpeg_enc.src_h,
 		jpeg_enc.pic_w, jpeg_enc.pic_h,
 		jpeg_enc.quality, jpeg_enc.rotate,
@@ -944,7 +946,7 @@ bool CallbackNotifier::takePicture(const void* frame, bool is_continuous)
 		jpeg_enc.crop_y,
 		jpeg_enc.crop_w,
 		jpeg_enc.crop_h);
-	
+
 	pNode = mBufferList->allocBuffer(-1, mPictureWidth * mPictureHeight);
 	if (pNode == NULL)
 	{
@@ -960,7 +962,7 @@ bool CallbackNotifier::takePicture(const void* frame, bool is_continuous)
 
 	JpegEncInfo sjpegInfo;
 	EXIFInfo   exifInfo;
-	
+
 	memset(&sjpegInfo, 0, sizeof(JpegEncInfo));
 	memset(&exifInfo, 0, sizeof(EXIFInfo));
 
@@ -992,8 +994,8 @@ bool CallbackNotifier::takePicture(const void* frame, bool is_continuous)
 	exifInfo.ThumbHeight = mThumbHeight;
 
 	LOGV("addrY: %x, src: %dx%d, pic: %dx%d, quality: %d, rotate: %d,\
-		thumbW: %d, thumbH: %d,EnableCorp: %d,crop: [%d, %d, %d, %d]", 
-		sjpegInfo.pAddrPhyY, 
+		thumbW: %d, thumbH: %d,EnableCorp: %d,crop: [%d, %d, %d, %d]",
+		sjpegInfo.pAddrPhyY,
 		sjpegInfo.sBaseInfo.nInputWidth, sjpegInfo.sBaseInfo.nInputHeight,
 		sjpegInfo.sBaseInfo.nDstWidth, sjpegInfo.sBaseInfo.nDstHeight,
 		sjpegInfo.quality, exifInfo.Orientation,
@@ -1013,7 +1015,7 @@ bool CallbackNotifier::takePicture(const void* frame, bool is_continuous)
 		mGpsLatitude,
 		mGpsLongitude,
 		mGpsAltitude,
-		mGpsTimestamp); 
+		mGpsTimestamp);
 
 	if (0 != strlen(mGpsMethod)){
 		strcpy((char*)exifInfo.gpsProcessingMethod,mGpsMethod);
@@ -1021,13 +1023,13 @@ bool CallbackNotifier::takePicture(const void* frame, bool is_continuous)
 		exifInfo.gps_latitude = mGpsLatitude;
 		exifInfo.gps_longitude = mGpsLongitude;
 		exifInfo.gps_altitude = mGpsAltitude;
-		exifInfo.gps_timestamp = mGpsTimestamp;	
+		exifInfo.gps_timestamp = mGpsTimestamp;
 		memset(mGpsMethod, 0, sizeof(mGpsMethod));
 
 	}
 	else
 		exifInfo.enableGpsInfo = 0;
-	
+
 	exifInfo.ExposureTime.num = mExposureTime.num;
 	exifInfo.ExposureTime.den = mExposureTime.den;
 
@@ -1068,11 +1070,11 @@ bool CallbackNotifier::takePicture(const void* frame, bool is_continuous)
 		mBufferList->push(pNode);
 
 		// cb number of pictures
-		if (isMessageEnabled(CAMERA_MSG_CONTINUOUSSNAP)) 
+		if (isMessageEnabled(CAMERA_MSG_CONTINUOUSSNAP))
 		{
 			mNotifyCB(CAMERA_MSG_CONTINUOUSSNAP, mSavePictureCnt, 0, mCallbackCookie);
 	    }
-		
+
 		pthread_cond_signal(&mSavePictureCond);
 
 		mSavePictureCnt++;
@@ -1092,13 +1094,13 @@ bool CallbackNotifier::takePicture(const void* frame, bool is_continuous)
 		else
 		{
 			camera_memory_t* jpeg_buff = mGetMemoryCB(-1, bufSize, 1, NULL);
-			if (NULL != jpeg_buff && NULL != jpeg_buff->data) 
+			if (NULL != jpeg_buff && NULL != jpeg_buff->data)
 			{
-				memcpy(jpeg_buff->data, (uint8_t *)pOutBuf, bufSize); 
+				memcpy(jpeg_buff->data, (uint8_t *)pOutBuf, bufSize);
 				mDataCB(CAMERA_MSG_COMPRESSED_IMAGE, jpeg_buff, 0, NULL, mCallbackCookie);
 				jpeg_buff->release(jpeg_buff);
-			} 
-			else 
+			}
+			else
 			{
 				LOGE("%s: Memory failure in CAMERA_MSG_COMPRESSED_IMAGE", __FUNCTION__);
 			}
@@ -1106,7 +1108,7 @@ bool CallbackNotifier::takePicture(const void* frame, bool is_continuous)
 			mBufferList->releaseBuffer(pNode);
 		}
 	}
-	
+
 	DBG_TIME_DIFF("photo end");
 	LOGV("taking photo end");
 	return true;
@@ -1143,12 +1145,12 @@ void CallbackNotifier::onNextFrameSW(const void* frame)
 		src_height			= pbuf->height;
 		memcpy((void*)&src_crop, (void*)&pbuf->crop_rect, sizeof(RECT_t));
 	}
-	
+
 	framesize = ALIGN_16B(src_width) * src_height * 3/2;
-	if (isMessageEnabled(CAMERA_MSG_VIDEO_FRAME) && isVideoRecordingEnabled()) 
+	if (isMessageEnabled(CAMERA_MSG_VIDEO_FRAME) && isVideoRecordingEnabled())
 	{
         camera_memory_t* cam_buff = mGetMemoryCB(-1, framesize, 1, NULL);
-        if (NULL != cam_buff && NULL != cam_buff->data) 
+        if (NULL != cam_buff && NULL != cam_buff->data)
 		{
             memcpy(cam_buff->data, (void *)src_addr_vir, framesize);
             mDataCBTimestamp(pbuf->timeStamp, CAMERA_MSG_VIDEO_FRAME,
@@ -1159,20 +1161,20 @@ void CallbackNotifier::onNextFrameSW(const void* frame)
         }
     }
 
-    if (isMessageEnabled(CAMERA_MSG_PREVIEW_FRAME)) 
+    if (isMessageEnabled(CAMERA_MSG_PREVIEW_FRAME))
 	{
 		if (strcmp(mCallingProcessName, "com.android.facelock") == 0)
 		{
  			camera_memory_t* cam_buff = mGetMemoryCB(-1, 160 * 120 * 3 / 2, 1, NULL);
-	        if (NULL != cam_buff && NULL != cam_buff->data) 
+	        if (NULL != cam_buff && NULL != cam_buff->data)
 			{
-				yuv420spDownScale((void*)src_addr_vir, cam_buff->data, 
+				yuv420spDownScale((void*)src_addr_vir, cam_buff->data,
 								ALIGN_16B(src_width), src_height,
 								160, 120);
 	            mDataCB(CAMERA_MSG_PREVIEW_FRAME, cam_buff, 0, NULL, mCallbackCookie);
 	            cam_buff->release(cam_buff);
 	        }
-			else 
+			else
 			{
 	            LOGE("%s: Memory failure in CAMERA_MSG_PREVIEW_FRAME", __FUNCTION__);
 	        }
@@ -1180,9 +1182,9 @@ void CallbackNotifier::onNextFrameSW(const void* frame)
 		else
 		{
 			camera_memory_t* cam_buff = mGetMemoryCB(-1, mCBWidth * mCBHeight * 3 / 2, 1, NULL);
-	        if (NULL != cam_buff && NULL != cam_buff->data) 
+	        if (NULL != cam_buff && NULL != cam_buff->data)
 			{
-				yuv420spDownScale((void*)src_addr_vir, cam_buff->data, 
+				yuv420spDownScale((void*)src_addr_vir, cam_buff->data,
 								ALIGN_16B(src_width), src_height,
 								mCBWidth, mCBHeight);
 				if (src_format == V4L2_PIX_FMT_NV12)
@@ -1201,7 +1203,7 @@ void CallbackNotifier::onNextFrameSW(const void* frame)
 	            mDataCB(CAMERA_MSG_PREVIEW_FRAME, cam_buff, 0, NULL, mCallbackCookie);
 	            cam_buff->release(cam_buff);
 	        }
-			else 
+			else
 			{
 	            LOGE("%s: Memory failure in CAMERA_MSG_PREVIEW_FRAME", __FUNCTION__);
 	        }
@@ -1235,20 +1237,20 @@ status_t CallbackNotifier::faceDetectionMsg(camera_frame_metadata_t *face)
 	{
 		camera_memory_t *cam_buff = mGetMemoryCB(-1, 1, 1, NULL);
 		mDataCB(CAMERA_MSG_PREVIEW_METADATA, cam_buff, 0, face, mCallbackCookie);
-		cam_buff->release(cam_buff); 
+		cam_buff->release(cam_buff);
 	}
     return NO_ERROR;
 }
 
 status_t CallbackNotifier::smartDetectionMsg(int32_t type)
 {
-		
+
 	if (isSmartMessageEnabled(CAMERA_SMART_MSG_STATUS))
 	{
         mNotifyCB(CAMERA_SMART_MSG_STATUS, type, 0, mCallbackCookie);
     }
 	return NO_ERROR;
-		
+
 }
 void CallbackNotifier::notifyPictureMsg(const void* frame)
 {
@@ -1258,17 +1260,17 @@ void CallbackNotifier::notifyPictureMsg(const void* frame)
 	int framesize = pbuf->width * pbuf->height * 3/2;
 
 	// shutter msg
-    if (isMessageEnabled(CAMERA_MSG_SHUTTER)) 
+    if (isMessageEnabled(CAMERA_MSG_SHUTTER))
 	{
 		F_LOG;
         mNotifyCB(CAMERA_MSG_SHUTTER, 0, 0, mCallbackCookie);
     }
 
 	// raw image msg
-	if (isMessageEnabled(CAMERA_MSG_RAW_IMAGE)) 
+	if (isMessageEnabled(CAMERA_MSG_RAW_IMAGE))
 	{
 		camera_memory_t *dummyRaw = mGetMemoryCB(-1, 1, 1, NULL);
-		if ( NULL == dummyRaw ) 
+		if ( NULL == dummyRaw )
 		{
 			LOGE("%s: Memory failure in CAMERA_MSG_PREVIEW_FRAME", __FUNCTION__);
 			return;
@@ -1276,23 +1278,23 @@ void CallbackNotifier::notifyPictureMsg(const void* frame)
 		mDataCB(CAMERA_MSG_RAW_IMAGE, dummyRaw, 0, NULL, mCallbackCookie);
 		dummyRaw->release(dummyRaw);
 	}
-	else if (isMessageEnabled(CAMERA_MSG_RAW_IMAGE_NOTIFY)) 
+	else if (isMessageEnabled(CAMERA_MSG_RAW_IMAGE_NOTIFY))
 	{
 		mNotifyCB(CAMERA_MSG_RAW_IMAGE_NOTIFY, 0, 0, mCallbackCookie);
 	}
-	
+
 	// postview msg
 	if (0 && isMessageEnabled(CAMERA_MSG_POSTVIEW_FRAME) )
 	{
 		F_LOG;
 		camera_memory_t* cam_buff = mGetMemoryCB(-1, framesize, 1, NULL);
-        if (NULL != cam_buff && NULL != cam_buff->data) 
+        if (NULL != cam_buff && NULL != cam_buff->data)
 		{
             memset(cam_buff->data, 0xff, framesize);
 			mDataCB(CAMERA_MSG_POSTVIEW_FRAME, cam_buff, 0, NULL, mCallbackCookie);
             cam_buff->release(cam_buff);
-        } 
-		else 
+        }
+		else
 		{
             LOGE("%s: Memory failure in CAMERA_MSG_PREVIEW_FRAME", __FUNCTION__);
 			return;
@@ -1303,8 +1305,8 @@ void CallbackNotifier::notifyPictureMsg(const void* frame)
 void CallbackNotifier::startContinuousPicture()
 {
 	F_LOG;
-	
-	// 
+
+	//
 	mSavePictureCnt = 0;
 }
 
@@ -1340,7 +1342,7 @@ bool CallbackNotifier::savePictureThread()
 {
 	int wait_cnt = 5;
 	int wait_time = 3;		// 3s * 5 = 15s
-	
+
 	if (mIsSinglePicture)
 	{
 		pthread_mutex_lock(&mSavePictureMutex);
@@ -1348,13 +1350,13 @@ bool CallbackNotifier::savePictureThread()
 		{
 			mSaveThreadExited = true;
 			pthread_mutex_unlock(&mSavePictureMutex);
-			
+
 			pthread_cond_signal(&mSavePictureCond);
-			
+
 			LOGD("savePictureThread exit, line: %d", __LINE__);
 			return false;
 		}
-		
+
 		if (mBufferList->isListEmpty())
 		{
 			LOGV("wait for picture to save");
@@ -1369,18 +1371,18 @@ bool CallbackNotifier::savePictureThread()
 		if (mBufferList->isListEmpty())
 		{
 			pthread_mutex_lock(&mSavePictureMutex);
-			
+
 			if (mSavePictureThread->getThreadStatus() == THREAD_STATE_EXIT)
 			{
 				mSaveThreadExited = true;
 				pthread_mutex_unlock(&mSavePictureMutex);
-				
+
 				pthread_cond_signal(&mSavePictureCond);
-				
+
 				LOGD("savePictureThread exit, line: %d", __LINE__);
 				return false;
 			}
-			
+
 			LOGV("wait for picture to save");
 			pthread_cond_wait(&mSavePictureCond, &mSavePictureMutex);
 			pthread_mutex_unlock(&mSavePictureMutex);
@@ -1389,7 +1391,7 @@ bool CallbackNotifier::savePictureThread()
 	}
 
 	ALOGV("%d items left in the picture list.", mBufferList->getItemCnt());
-	
+
 	DBG_TIME_BEGIN("save picture", 0);
 
 	char fname[128];
@@ -1410,18 +1412,18 @@ bool CallbackNotifier::savePictureThread()
 			sprintf(pNode->priv, "%s%03d.jpg", mFolderPath, pNode->id);
 		}
 		cb_buff = mGetMemoryCB(-1, strlen(pNode->priv), 1, NULL);
-		if (NULL != cb_buff && NULL != cb_buff->data) 
+		if (NULL != cb_buff && NULL != cb_buff->data)
 		{
 			memcpy(cb_buff->data, (uint8_t *)pNode->priv, strlen(pNode->priv));
 			mDataCB(CAMERA_MSG_SNAP_FD, cb_buff, 0, NULL, mCallbackCookie);
 			cb_buff->release(cb_buff);
-		} 
-		else 
+		}
+		else
 		{
 			LOGE("%s: Memory failure in CAMERA_MSG_SNAP_FD", __FUNCTION__);
 			goto SAVE_PICTURE_END;
 		}
-		
+
 		// wait fd
 		while(wait_cnt-- >= 0)
 		{
@@ -1436,15 +1438,15 @@ bool CallbackNotifier::savePictureThread()
 				{
 					LOGW("wait fd timeout");
 					pthread_mutex_unlock(&mPictureFdMutex);
-					
+
 					pthread_mutex_lock(&mSavePictureMutex);
 					if (mSavePictureThread->getThreadStatus() == THREAD_STATE_EXIT)
 					{
 						mSaveThreadExited = true;
 						pthread_mutex_unlock(&mSavePictureMutex);
-						
+
 						pthread_cond_signal(&mSavePictureCond);
-						
+
 						LOGD("savePictureThread exit, line: %d", __LINE__);
 						return false;
 					}
@@ -1484,7 +1486,7 @@ bool CallbackNotifier::savePictureThread()
 		pNode->fd = mContinuousFd[pNode->id];
 		mContinuousFd[pNode->id] = 0;
 		pthread_mutex_unlock(&mPictureFdMutex);
-		
+
 		if (pNode->fd <= 0)
 		{
 			LOGD("savePictureThread exit, line: %d", __LINE__);
@@ -1493,7 +1495,7 @@ bool CallbackNotifier::savePictureThread()
 	}
 	// write
 	if (pNode->id >= 0)
-	{		
+	{
 		if(pNode->fd > 0)
 		{
 			int err = ::write(pNode->fd, (uint8_t *)pNode->data, pNode->size);
@@ -1504,7 +1506,7 @@ bool CallbackNotifier::savePictureThread()
 				goto SAVE_PICTURE_END;
 			}
 			::close(pNode->fd);
-			if (isMessageEnabled(CAMERA_MSG_CONTINUOUSSNAP)) 
+			if (isMessageEnabled(CAMERA_MSG_CONTINUOUSSNAP))
 			{
 				mNotifyCB(CAMERA_MSG_CONTINUOUSSNAP, (pNode->id + 1000), 0, mCallbackCookie);
 		    }
@@ -1556,22 +1558,22 @@ bool CallbackNotifier::savePictureThread()
 				LOGE("open %s failed, %s", fname, strerror(errno));
 				goto SAVE_PICTURE_END;
 			}
-		}	
+		}
 	}
-	
+
 	DBG_TIME_DIFF("write file");
 
 	if (pNode->id < 0)
 	{
 		camera_memory_t* cb_buff;
 		cb_buff = mGetMemoryCB(-1, strlen(pNode->priv), 1, NULL);
-		if (NULL != cb_buff && NULL != cb_buff->data) 
+		if (NULL != cb_buff && NULL != cb_buff->data)
 		{
 			memcpy(cb_buff->data, (uint8_t *)pNode->priv, strlen(pNode->priv));
 			mDataCB(CAMERA_MSG_SNAP_THUMB, cb_buff, 0, NULL, mCallbackCookie);
 			cb_buff->release(cb_buff);
-		} 
-		else 
+		}
+		else
 		{
 			LOGE("%s: Memory failure in CAMERA_MSG_SNAP_THUMB", __FUNCTION__);
 		}
@@ -1582,7 +1584,7 @@ SAVE_PICTURE_END:
 	{
 		mBufferList->releaseBuffer(pNode);
 	}
-	
+
 	return true;
 }
 
@@ -1593,7 +1595,7 @@ void CallbackNotifier::getCurrentDateTime()
 	struct tm *tm_t;
 	time(&t);
 	tm_t = localtime(&t);
-	sprintf(mDateTime, "%4d:%02d:%02d %02d:%02d:%02d", 
+	sprintf(mDateTime, "%4d:%02d:%02d %02d:%02d:%02d",
 		tm_t->tm_year+1900, tm_t->tm_mon+1, tm_t->tm_mday,
 		tm_t->tm_hour, tm_t->tm_min, tm_t->tm_sec);
 }
