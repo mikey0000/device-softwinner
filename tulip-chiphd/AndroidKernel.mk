@@ -66,11 +66,21 @@ $(KERNEL_OUT_MODINSTALL): $(KERNEL_BZIMAGE)
 	@rm -rf $(KERNEL_OUT_MODINSTALL)
 	@mkdir -p $(KERNEL_OUT_MODINSTALL)
 	@$(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) $(KERNEL_BLD_FLAGS) modules_install
+	@$(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/aw_schw $(KERNEL_BLD_FLAGS) modules modules_install
+	@$(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/nand/sun50iw1p1 $(KERNEL_BLD_FLAGS) modules modules_install
+	@$(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/gpu/mali400/kernel_mode/driver/src/devicedrv/mali $(KERNEL_BLD_FLAGS) modules modules_install
 
 mrproper_kernel:
 	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) $(KERNEL_BLD_FLAGS) mrproper
+	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/aw_schw $(KERNEL_BLD_FLAGS) mrproper
+	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/nand/sun50iw1p1 $(KERNEL_BLD_FLAGS) mrproper
+	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/gpu/mali400/kernel_mode/driver/src/devicedrv/mali $(KERNEL_BLD_FLAGS) mrproper
+	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) $(KERNEL_BLD_FLAGS) mrproper
 
 clean_kernel:
+	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/aw_schw $(KERNEL_BLD_FLAGS) clean
+	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/nand/sun50iw1p1 $(KERNEL_BLD_FLAGS) clean
+	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/gpu/mali400/kernel_mode/driver/src/devicedrv/mali $(KERNEL_BLD_FLAGS) clean
 	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) $(KERNEL_BLD_FLAGS) clean
 	$(hide) rm -rf $(KERNEL_OUT_MODINSTALL)
 
