@@ -62,10 +62,10 @@ $(KERNEL_BZIMAGE): $(KERNEL_CONFIG)
 	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) $(KERNEL_BLD_FLAGS)
 	$(hide) cp -f $(KERNEL_OUT_DIR)/arch/arm64/boot/Image $@
 
-$(KERNEL_OUT_MODINSTALL): $(KERNEL_CONFIG)
+$(KERNEL_OUT_MODINSTALL): $(KERNEL_BZIMAGE)
+	@rm -rf $(KERNEL_OUT_MODINSTALL)
 	@mkdir -p $(KERNEL_OUT_MODINSTALL)
 	@$(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) $(KERNEL_BLD_FLAGS) modules_install
-	@touch $@
 
 mrproper_kernel:
 	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) $(KERNEL_BLD_FLAGS) mrproper
