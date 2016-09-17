@@ -46,15 +46,18 @@ on fs
 
 	  # sw-keyboard
     insmod /system/vendor/modules/sunxi-keyboard.ko
-    #init_dev_detect
+    insmod /system/vendor/modules/sw-device.ko
 
 	  # csi module
     insmod /system/vendor/modules/videobuf2-core.ko
     insmod /system/vendor/modules/videobuf2-memops.ko
     insmod /system/vendor/modules/videobuf2-dma-contig.ko
+    insmod /system/vendor/modules/videobuf2-vmalloc.ko
     insmod /system/vendor/modules/vfe_io.ko
     insmod /system/vendor/modules/gc0328c.ko
-    insmod /system/vendor/modules/gc2145.ko
+    insmod /system/vendor/modules/hm5065.ko
+    insmod /system/vendor/modules/s5k4ec.ko
+    insmod /system/vendor/modules/gc2155.ko
     insmod /system/vendor/modules/vfe_v4l2.ko
 
 	  # network
