@@ -60,32 +60,34 @@ endif
 
 $(KERNEL_BZIMAGE): $(KERNEL_CONFIG)
 	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) $(KERNEL_BLD_FLAGS)
+	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/aw_schw $(KERNEL_BLD_FLAGS)
+	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/nand/sun50iw1p1 $(KERNEL_BLD_FLAGS)
+	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/gpu/mali400/kernel_mode/driver/src/devicedrv/mali $(KERNEL_BLD_FLAGS) $(MALI_BUILD_FLAGS)
 	$(hide) cp -f $(KERNEL_OUT_DIR)/arch/arm64/boot/Image $@
 
 $(KERNEL_OUT_MODINSTALL): $(KERNEL_BZIMAGE)
-	@rm -rf $(KERNEL_OUT_MODINSTALL)
-	@mkdir -p $(KERNEL_OUT_MODINSTALL)
-	@$(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) $(KERNEL_BLD_FLAGS) modules_install
-	@$(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/aw_schw $(KERNEL_BLD_FLAGS) modules modules_install
-	@$(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/nand/sun50iw1p1 $(KERNEL_BLD_FLAGS) modules modules_install
-	@$(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/gpu/mali400/kernel_mode/driver/src/devicedrv/mali $(KERNEL_BLD_FLAGS) modules modules_install
+	$(hide) rm -rf $(KERNEL_OUT_MODINSTALL)
+	$(hide) mkdir -p $(KERNEL_OUT_MODINSTALL)
+	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) $(KERNEL_BLD_FLAGS) modules_install
+	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/aw_schw $(KERNEL_BLD_FLAGS) modules_install
+	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/nand/sun50iw1p1 $(KERNEL_BLD_FLAGS) modules_install
+	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/gpu/mali400/kernel_mode/driver/src/devicedrv/mali $(KERNEL_BLD_FLAGS) $(MALI_BUILD_FLAGS) modules_install
 
 mrproper_kernel:
-	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) $(KERNEL_BLD_FLAGS) mrproper
-	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/aw_schw $(KERNEL_BLD_FLAGS) mrproper
-	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/nand/sun50iw1p1 $(KERNEL_BLD_FLAGS) mrproper
-	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/gpu/mali400/kernel_mode/driver/src/devicedrv/mali $(KERNEL_BLD_FLAGS) mrproper
+	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/aw_schw $(KERNEL_BLD_FLAGS) clean
+	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/nand/sun50iw1p1 $(KERNEL_BLD_FLAGS) clean
+	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/gpu/mali400/kernel_mode/driver/src/devicedrv/mali $(KERNEL_BLD_FLAGS) $(MALI_BUILD_FLAGS) clean
 	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) $(KERNEL_BLD_FLAGS) mrproper
 
 clean_kernel:
 	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/aw_schw $(KERNEL_BLD_FLAGS) clean
 	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/nand/sun50iw1p1 $(KERNEL_BLD_FLAGS) clean
-	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/gpu/mali400/kernel_mode/driver/src/devicedrv/mali $(KERNEL_BLD_FLAGS) clean
+	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) M=$(KERNEL_SRC_DIR)/modules/gpu/mali400/kernel_mode/driver/src/devicedrv/mali $(KERNEL_BLD_FLAGS) $(MALI_BUILD_FLAGS) clean
 	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) $(KERNEL_BLD_FLAGS) clean
 	$(hide) rm -rf $(KERNEL_OUT_MODINSTALL)
 
 menuconfig xconfig gconfig: $(KERNEL_CONFIG)
-	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) $(KERNEL_BLD_FLAGS) $@
+	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) $(KERNEL_BLD_FLAGS) $$(hide)
 	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) $(KERNEL_BLD_FLAGS) savedefconfig
 	$(hide) cp -f $(KERNEL_SAVE_DEFCONFIG) $(KERNEL_DEFCONFIG)
 	$(hide) echo ===========
@@ -97,15 +99,15 @@ build_kernel: $(KERNEL_BZIMAGE)
 modules_install: $(KERNEL_OUT_MODINSTALL)
 
 copy_modules_to_root: modules_install
-	@for module in $(KERNEL_MODULES_TO_ROOT); do \
+	$(hide) for module in $(KERNEL_MODULES_TO_ROOT); do \
 		find $(KERNEL_OUT_MODINSTALL)/lib/modules/`cat $(KERNEL_VERSION_FILE)` -name "$${module}" \
 			-exec cp -f {} $(KERNEL_MODULES_ROOT)/ \; ; \
 	done
 
 copy_modules_to_system: modules_install
-	@rm -rf $(KERNEL_MODULES_VENDOR)
-	@mkdir -p $(KERNEL_MODULES_VENDOR)
-	@for module in $$(find $(KERNEL_OUT_MODINSTALL)/lib/modules/`cat $(KERNEL_VERSION_FILE)` -name "*.ko"); do \
+	$(hide) rm -rf $(KERNEL_MODULES_VENDOR)
+	$(hide) mkdir -p $(KERNEL_MODULES_VENDOR)
+	$(hide) for module in $$(find $(KERNEL_OUT_MODINSTALL)/lib/modules/`cat $(KERNEL_VERSION_FILE)` -name "*.ko"); do \
 		cp -f "$${module}" $(KERNEL_MODULES_VENDOR)/ ; \
 	done
 
@@ -115,7 +117,7 @@ gtags_files := GTAGS GPATH GRTAGS GSYMS
 cscope_files := $(addprefix cscope.,files out out.in out.po)
 
 TAGS tags gtags cscope: $(KERNEL_CONFIG)
-	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) $(KERNEL_BLD_FLAGS) $@
+	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) $(KERNEL_BLD_FLAGS) $$(hide)
 	$(hide) rm -f $(KERNEL_SRC_DIR)/$($@_files)
 	$(hide) cp -fs $(addprefix `pwd`/$(KERNEL_OUT_DIR)/,$($@_files)) $(KERNEL_SRC_DIR)/
 
