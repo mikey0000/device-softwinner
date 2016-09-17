@@ -10,7 +10,7 @@ TARGET_NO_BOOTLOADER := true
 TARGET_NO_RECOVERY := false
 TARGET_NO_KERNEL := false
 
-# ENABLE_CPUSETS := true # It doesn't work stable on Android TV
+ENABLE_CPUSETS := true
 # ENABLE_SCHED_BOOST := true
 
 POLICYVERS := 28
