@@ -31,7 +31,6 @@ KERNEL_OUT_MODINSTALL := $(KERNEL_OUT_DIR)/$(KERNEL_MODINSTALL)
 KERNEL_MODULES_ROOT := $(PRODUCT_OUT)/root
 KERNEL_MODULES_VENDOR := $(PRODUCT_OUT)/system/vendor/modules
 KERNEL_CONFIG := $(KERNEL_OUT_DIR)/.config
-KERNEL_SAVE_DEFCONFIG := $(KERNEL_OUT_DIR)/defconfig
 KERNEL_BLD_FLAGS := \
     ARCH=$(TARGET_KERNEL_ARCH) \
     INSTALL_MOD_PATH=$(KERNEL_MODINSTALL) \
@@ -87,9 +86,8 @@ clean_kernel:
 	$(hide) rm -rf $(KERNEL_OUT_MODINSTALL)
 
 menuconfig xconfig gconfig: $(KERNEL_CONFIG)
-	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) $(KERNEL_BLD_FLAGS) $$(hide)
-	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) $(KERNEL_BLD_FLAGS) savedefconfig
-	$(hide) cp -f $(KERNEL_SAVE_DEFCONFIG) $(KERNEL_DEFCONFIG)
+	$(hide) $(KERNEL_BLD_ENV) $(MAKE) -C $(KERNEL_SRC_DIR) $(KERNEL_BLD_FLAGS) $@
+	$(hide) cp -f $(KERNEL_CONFIG) $(KERNEL_DEFCONFIG)
 	$(hide) echo ===========
 	$(hide) echo $(KERNEL_DEFCONFIG) has been modified !
 	$(hide) echo ===========
