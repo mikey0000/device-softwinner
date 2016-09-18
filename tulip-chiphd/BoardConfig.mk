@@ -10,7 +10,8 @@ TARGET_NO_BOOTLOADER := true
 TARGET_NO_RECOVERY := false
 TARGET_NO_KERNEL := false
 
-ENABLE_CPUSETS := true
+# disable CPUSETS which is not supported by Tulip kernel currently
+# ENABLE_CPUSETS := true
 # ENABLE_SCHED_BOOST := true
 
 POLICYVERS := 28
