@@ -17,8 +17,8 @@ PRODUCT_COPY_FILES += \
         device/softwinner/common/rild/lib64/libsoftwinner-ril-5.0.so:system/lib64/libsoftwinner-ril-5.0.so
 
 # 3G Data Card usb modeswitch File
-PRODUCT_COPY_FILES += \
-	$(call find-copy-subdir-files,*,device/softwinner/common/rild/usb_modeswitch.d,system/etc/usb_modeswitch.d)
+#PRODUCT_COPY_FILES += \
+#	$(call find-copy-subdir-files,*,device/softwinner/common/rild/usb_modeswitch.d,system/etc/usb_modeswitch.d)
 
 # Radio parameter
 PRODUCT_PROPERTY_OVERRIDES += \
