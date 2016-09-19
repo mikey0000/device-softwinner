@@ -2507,7 +2507,7 @@ void CameraHardware::getCurrentOriention(int * oriention, int compensation,bool 
 	}
 	//LOGV("FDOriention: %d",*oriention);
 }
-int CameraHardware::getPriviewSize(int* preview_width,int* preview_height,int capture_width,int capture_height)
+int CameraHardware::getPreviewSize(int* preview_width,int* preview_height,int capture_width,int capture_height)
 {
 	//in order to have a better preview image,awgallery run in a larger size,which
 	//set in V4L2CameraDevice. but other application must run in a matching size

@@ -489,7 +489,7 @@ public:
 	void makeFDOrientionArray();
 	void getHWOrientionInfo(void *);
 	int setExifInfo(struct isp_exif_attribute exifinfo);
-	int getPriviewSize(int* preview_width,int* preview_height,int capture_width,int capture_height);
+	int getPreviewSize(int* preview_width,int* preview_height,int capture_width,int capture_height);
 
 protected:
 	CCameraConfig * 				mCameraConfig;

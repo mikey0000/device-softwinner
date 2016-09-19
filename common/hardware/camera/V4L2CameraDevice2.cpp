@@ -459,20 +459,25 @@ status_t V4L2CameraDevice::connectDevice(HALCameraInfo * halInfo)
 		{
 			return ret;
 		}
-	switch((v4l2_sensor_type)getSensorType()){
-		case V4L2_SENSOR_TYPE_YUV:
-			LOGV("the sensor is YUV sensor");
-			mSensor_Type = V4L2_SENSOR_TYPE_YUV;
-			break;
-		case V4L2_SENSOR_TYPE_RAW:
-			LOGV("the sensor is RAW sensor");
-			mSensor_Type = V4L2_SENSOR_TYPE_RAW;
-			break;
-		default:
-			LOGE("get the sensor type failed");
-			goto END_ERROR;
+	if(!mIsUsbCamera) { //these don't exist on usb devices
+		switch((v4l2_sensor_type)getSensorType()){
+			case V4L2_SENSOR_TYPE_YUV:
+				LOGV("the sensor is YUV sensor");
+				mSensor_Type = V4L2_SENSOR_TYPE_YUV;
+				break;
+			case V4L2_SENSOR_TYPE_RAW:
+				LOGV("the sensor is RAW sensor");
+				mSensor_Type = V4L2_SENSOR_TYPE_RAW;
+				break;
+			default:
+				LOGE("get the sensor type failed");
+				goto END_ERROR;
+		}
+		halInfo->fast_picture_mode = (int)mSensor_Type;	//set the CameraHardware Class fast_picture_mode member
+	} else {
+	halInfo->fast_picture_mode = 0;
 	}
-	halInfo->fast_picture_mode = (int)mSensor_Type;	//set the CameraHardware Class fast_picture_mode member
+	
 	memcpy((void*)&mHalCameraInfo, (void*)halInfo, sizeof(HALCameraInfo));
 	struct isp_exif_attribute exif_attri;
 	getExifInfo(&exif_attri);
@@ -1835,7 +1840,7 @@ int V4L2CameraDevice::v4l2SetVideoParams(int width, int height, uint32_t pix_fmt
 		int sub_width,sub_height;
 		sub_width = format.fmt.pix.width / scale;
 		sub_height = format.fmt.pix.height / scale;
-		mCameraHardware->getPriviewSize(&sub_width,&sub_height,format.fmt.pix.width,format.fmt.pix.height);
+		mCameraHardware->getPreviewSize(&sub_width,&sub_height,format.fmt.pix.width,format.fmt.pix.height);
 		
 		sub_fmt.width = sub_width;
 		sub_fmt.height = sub_height;
@@ -1910,7 +1915,7 @@ int V4L2CameraDevice::v4l2SetVideoParams(int width, int height, uint32_t pix_fmt
 		int sub_width,sub_height;
 		sub_width = format.fmt.pix.width / scale;
 		sub_height = format.fmt.pix.height / scale;
-		mCameraHardware->getPriviewSize(&sub_width,&sub_height,format.fmt.pix.width,format.fmt.pix.height);
+		mCameraHardware->getPreviewSize(&sub_width,&sub_height,format.fmt.pix.width,format.fmt.pix.height);
 		
 		format.fmt.pix.subchannel = &sub_fmt;
 		format.fmt.pix.subchannel->width = sub_width;
