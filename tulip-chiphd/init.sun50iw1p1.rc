@@ -107,6 +107,10 @@ on property:sys.boot_completed=1
     #start engsetmacaddr
     #start engsetbtmacaddr
 
+#uvc modules
+   insmod /system/vendor/modules/uvcvideo.ko
+   insmod /system/vendor/modules/gspca_main.ko
+   
 on post-fs-data
     # change permissions for process groups
     # https://bugs.launchpad.net/bugs/1037611
