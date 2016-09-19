@@ -38,7 +38,7 @@ PRODUCT_COPY_FILES += \
     device/softwinner/tulip-common/wpa_supplicant_overlay.conf:/system/etc/wifi/wpa_supplicant_overlay.conf
 
 PRODUCT_COPY_FILES += \
-    hardware/aw/audio/tulip/audio_policy.conf:system/etc/audio_policy.conf \
+    hardware/aw/audio/tulip/audio_policy_configuration.xml:system/etc/audio_policy_configuration.xml \
     hardware/aw/audio/tulip/phone_volume.conf:system/etc/phone_volume.conf \
     hardware/aw/audio/tulip/a64_paths.xml:system/etc/a64_paths.xml
 

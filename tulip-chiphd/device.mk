@@ -37,6 +37,8 @@ PRODUCT_COPY_FILES += \
 
 endif # TARGET_KERNEL_BUILT_FROM_SOURCE
 
+USE_XML_AUDIO_POLICY_CONF := 1
+
 PRODUCT_PACKAGES += \
     hdmi_cec.tulip \
     power.tulip
@@ -56,7 +58,8 @@ PRODUCT_COPY_FILES += \
     device/softwinner/tulip-chiphd/twrp.fstab:recovery/root/etc/twrp.fstab
 
 PRODUCT_COPY_FILES += \
-    device/softwinner/tulip-chiphd/bluetooth/rtkbt.conf:system/etc/bluetooth/rtkbt.conf
+    device/softwinner/tulip-chiphd/bluetooth/rtkbt.conf:system/etc/bluetooth/rtkbt.conf \
+    device/softwinner/tulip-chiphd/audio/audio_policy_configuration.xml:system/etc/audio_policy_configuration.xml
 
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.camera.external.xml:system/etc/permissions/android.hardware.camera.external.xml \
