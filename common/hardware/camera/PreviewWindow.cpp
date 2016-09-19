@@ -190,10 +190,9 @@ bool PreviewWindow::onNextFrameAvailable(const void* frame)
 				format = HAL_PIXEL_FORMAT_YCrCb_420_SP;
 				break;
 			case V4L2_PIX_FMT_NV12:
-				    LOGV("preview format: V4L2_PIX_FMT_NV12");
-				    format = 0x101;			// NV12
-				    break;
-			case V4L2_PIX_FMT_YVU420:
+				LOGV("preview format: V4L2_PIX_FMT_NV12");
+				format = 0x101;			// NV12
+				break;
 			case V4L2_PIX_FMT_YUV420:	// to do
 				LOGV("preview format: HAL_PIXEL_FORMAT_YV12");
 				format = HAL_PIXEL_FORMAT_YV12;

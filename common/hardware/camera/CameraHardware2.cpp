@@ -2198,11 +2198,13 @@ status_t CameraHardware::doStartSmart()
 	}
 	LOGD("preview_format is %s", preview_format);
 	camera_dev->showformat(org_fmt, "smart preview");
-    res = camera_dev->startDevice(mWidth, mHeight, org_fmt, false);
-    if (res != NO_ERROR)
-	{
-        return res;
-    }
+	if(!camera_dev->isStarted()) {
+		res = camera_dev->startDevice(mWidth, mHeight, org_fmt, false);
+		if (res != NO_ERROR)
+		{
+			return res;
+		}
+	}
 
 	res = camera_dev->startDeliveringFrames();
     if (res != NO_ERROR)
@@ -3662,12 +3664,15 @@ status_t CameraHardware::doStartPreview()
 	LOGD("Starting camera, Size:%dx%d , picture format:%s",
 		 mCaptureWidth, mCaptureHeight, preview_format);
 	camera_dev->showformat(org_fmt, "preview");
-    res = camera_dev->startDevice(mCaptureWidth, mCaptureHeight, org_fmt, video_hint);
-    if (res != NO_ERROR)
-	{
-        mPreviewWindow.stopPreview();
-        return res;
-    }
+	if(!camera_dev->isStarted()) {
+		res = camera_dev->startDevice(mCaptureWidth, mCaptureHeight, org_fmt, video_hint);
+		if (res != NO_ERROR)
+		{
+			mPreviewWindow.stopPreview();
+			return res;
+		}
+	}
+    
 	if (mCameraConfig->supportFocusMode())
 	setAutoFocusRange();
 	res = camera_dev->startDeliveringFrames();
