@@ -140,10 +140,12 @@ BUILD_NUMBER := $(shell date +%Y%m%d)
 
 # widevine
 BOARD_WIDEVINE_OEMCRYPTO_LEVEL := 3
+SECURE_OS_OPTEE := yes
 
 #add widevine libraries
 PRODUCT_PROPERTY_OVERRIDES += \
-        drm.service.enabled=true
+    drm.service.enabled=true \
+    ro.sys.widevine_oemcrypto_level=0
 
 PRODUCT_PACKAGES += \
     com.google.widevine.software.drm.xml \
@@ -158,5 +160,11 @@ PRODUCT_PACKAGES += \
 ifeq ($(BOARD_WIDEVINE_OEMCRYPTO_LEVEL), 1)
 PRODUCT_PACKAGES += \
     liboemcrypto \
-    libtee_client
+    libteec \
+    tee_supplicant
+
+PRODUCT_COPY_FILES += \
+    device/softwinner/common/optee_ta/a98befed-d679-ce4a-a3c827dcd51d21ed.ta:system/bin/a98befed-d679-ce4a-a3c827dcd51d21ed.ta \
+    device/softwinner/common/optee_ta/4d78d2ea-a631-70fb-aaa787c2b5773052.ta:system/bin/4d78d2ea-a631-70fb-aaa787c2b5773052.ta \
+    device/softwinner/common/optee_ta/e41f7029-c73c-344a-8c5bae90c7439a47.ta:system/bin/e41f7029-c73c-344a-8c5bae90c7439a47.ta
 endif
