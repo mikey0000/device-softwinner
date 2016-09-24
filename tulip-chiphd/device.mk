@@ -129,9 +129,5 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.softmouse.midbtn.code=-1 \
     ro.softmouse.rightbtn.code=-1
 
-# touchscreen orientation
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.sf.hwrotation=180
-
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.software.app_widgets.xml:system/etc/permissions/android.software.app_widgets.xml
