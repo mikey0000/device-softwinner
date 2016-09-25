@@ -73,15 +73,7 @@ PRODUCT_COPY_FILES += \
     device/softwinner/tulip-chiphd/configs/media_profiles.xml:system/etc/media_profiles.xml \
     device/softwinner/tulip-chiphd/configs/sunxi-keyboard.kl:system/usr/keylayout/sunxi-keyboard.kl \
     device/softwinner/tulip-chiphd/configs/sunxi_ir_recv.kl:system/usr/keylayout/sunxi_ir_recv.kl \
-    device/softwinner/tulip-chiphd/configs/tp.idc:system/usr/idc/tp.idc
-
-PRODUCT_COPY_FILES += \
-    device/softwinner/tulip-chiphd/configs/camera.cfg:system/etc/camera.cfg \
-    device/softwinner/tulip-chiphd/configs/gsensor.cfg:system/usr/gsensor.cfg \
-    device/softwinner/tulip-chiphd/configs/media_profiles.xml:system/etc/media_profiles.xml \
-    device/softwinner/tulip-chiphd/configs/sunxi-keyboard.kl:system/usr/keylayout/sunxi-keyboard.kl \
-    device/softwinner/tulip-chiphd/configs/sunxi_ir_recv.kl:system/usr/keylayout/sunxi_ir_recv.kl \
-    device/softwinner/tulip-chiphd/configs/tp.idc:system/usr/idc/tp.idc
+    device/softwinner/tulip-chiphd/configs/gt9xxf_ts.idc:system/usr/idc/gt9xxf_ts.idc
 
 #PRODUCT_COPY_FILES += \
     device/softwinner/tulip-chiphd/hawkview/sensor_list_cfg.ini:system/etc/hawkview/sensor_list_cfg.ini
