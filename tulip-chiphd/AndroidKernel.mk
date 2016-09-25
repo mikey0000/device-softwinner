@@ -99,14 +99,13 @@ modules_install: $(KERNEL_OUT_MODINSTALL)
 copy_modules_to_root: modules_install
 	$(hide) for module in $(KERNEL_MODULES_TO_ROOT); do \
 		find $(KERNEL_OUT_MODINSTALL)/lib/modules/`cat $(KERNEL_VERSION_FILE)` -name "$${module}" \
-			-exec cp -f {} $(KERNEL_MODULES_ROOT)/ \; ; \
+			-exec cp -u {} $(KERNEL_MODULES_ROOT)/ \; ; \
 	done
 
 copy_modules_to_system: modules_install
-	$(hide) rm -rf $(KERNEL_MODULES_VENDOR)
 	$(hide) mkdir -p $(KERNEL_MODULES_VENDOR)
 	$(hide) for module in $$(find $(KERNEL_OUT_MODINSTALL)/lib/modules/`cat $(KERNEL_VERSION_FILE)` -name "*.ko"); do \
-		cp -f "$${module}" $(KERNEL_MODULES_VENDOR)/ ; \
+		cp -u "$${module}" $(KERNEL_MODULES_VENDOR)/ ; \
 	done
 
 TAGS_files := TAGS
