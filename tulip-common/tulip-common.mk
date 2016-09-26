@@ -148,8 +148,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.sys.widevine_oemcrypto_level=0
 
 PRODUCT_PACKAGES += \
-    com.google.widevine.software.drm.xml \
-    com.google.widevine.software.drm \
     libdrmwvmplugin \
     libwvm \
     libWVStreamControlAPI_L${BOARD_WIDEVINE_OEMCRYPTO_LEVEL} \
