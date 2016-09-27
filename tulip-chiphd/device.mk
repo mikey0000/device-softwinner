@@ -124,3 +124,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.software.app_widgets.xml:system/etc/permissions/android.software.app_widgets.xml
+
+# Some CTS tests will be skipped based on what the initial API level that
+# shipped on device was.
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.product.first_api_level=21
