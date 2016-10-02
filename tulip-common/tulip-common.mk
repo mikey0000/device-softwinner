@@ -140,7 +140,6 @@ BUILD_NUMBER := $(shell date +%Y%m%d)
 
 # widevine
 BOARD_WIDEVINE_OEMCRYPTO_LEVEL := 3
-SECURE_OS_OPTEE := yes
 
 #add widevine libraries
 PRODUCT_PROPERTY_OVERRIDES += \
