@@ -110,7 +110,7 @@ on property:sys.boot_completed=1
 #uvc modules
    insmod /system/vendor/modules/uvcvideo.ko
    insmod /system/vendor/modules/gspca_main.ko
-   
+
 on post-fs-data
     # change permissions for process groups
     # https://bugs.launchpad.net/bugs/1037611
@@ -219,3 +219,19 @@ service p2p_supplicant /system/bin/wpa_supplicant \
     socket wpa_wlan0 dgram 660 wifi wifi
     disabled
     oneshot
+
+on property:persist.net.eth0.speed=auto
+    exec u:r:su:s0 root -- /system/bin/ifconfig eth0 up
+    exec u:r:su:s0 root -- /system/bin/ethtool -s eth0 autoneg on
+
+on property:persist.net.eth0.speed=1000
+    exec u:r:su:s0 root -- /system/bin/ifconfig eth0 up
+    exec u:r:su:s0 root -- /system/bin/ethtool -s eth0 speed 1000 duplex full
+
+on property:persist.net.eth0.speed=100
+    exec u:r:su:s0 root -- /system/bin/ifconfig eth0 up
+    exec u:r:su:s0 root -- /system/bin/ethtool -s eth0 speed 100 duplex full
+
+on property:persist.net.eth0.speed=10
+    exec u:r:su:s0 root -- /system/bin/ifconfig eth0 up
+    exec u:r:su:s0 root -- /system/bin/ethtool -s eth0 speed 10 duplex full
