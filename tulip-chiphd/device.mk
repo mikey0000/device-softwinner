@@ -41,6 +41,7 @@ PRODUCT_PACKAGES += \
     hdmi_cec.tulip \
     power.tulip \
     input.evdev.default \
+    static_busybox \
     ethtool
 
 DEVICE_PACKAGE_OVERLAYS := \
@@ -52,6 +53,7 @@ PRODUCT_COPY_FILES += \
     device/softwinner/tulip-chiphd/init.sun50iw1p1.rc:root/init.sun50iw1p1.rc \
     device/softwinner/tulip-chiphd/init.recovery.sun50iw1p1.rc:root/init.recovery.sun50iw1p1.rc \
     device/softwinner/tulip-chiphd/ueventd.sun50iw1p1.rc:root/ueventd.sun50iw1p1.rc \
+    device/softwinner/tulip-chiphd/initialize_disk.sh:root/initialize_disk.sh \
     device/softwinner/tulip-chiphd/recovery.fstab:recovery.fstab
 
 PRODUCT_COPY_FILES += \

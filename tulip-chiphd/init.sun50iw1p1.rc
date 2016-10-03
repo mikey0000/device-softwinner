@@ -19,6 +19,9 @@ on init
 
 on early-fs
     insmod nand.ko
+
+    exec u:r:su:s0 root -- /sbin/busybox sh /initialize_disk.sh
+
     mount_all /fstab.sun50iw1p1
     swapon_all /fstab.sun50iw1p1
     restorecon_recursive /persist
