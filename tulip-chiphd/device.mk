@@ -40,7 +40,8 @@ endif # TARGET_KERNEL_BUILT_FROM_SOURCE
 PRODUCT_PACKAGES += \
     hdmi_cec.tulip \
     power.tulip \
-    input.evdev.default
+    input.evdev.default \
+    ethtool
 
 DEVICE_PACKAGE_OVERLAYS := \
     device/softwinner/tulip-chiphd/overlay \
