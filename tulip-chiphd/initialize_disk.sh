@@ -44,6 +44,9 @@ if ! ${BB} mount -t ext4 -o ro,barrier=1 ${DISK}p2 /system; then
   exit 2
 fi
 
+# Umount system
+trap "${BB} umount /system" EXIT
+
 # Nothing to do?
 if /system/bin/resize2fs ${DISK_PART} 2>&1 | ${BB} grep "Nothing to do"; then
   echo "Disk is already resized"
@@ -58,5 +61,7 @@ if ! /system/bin/resize2fs ${DISK_PART}; then
   echo "Failed to resize /data"
   exit 3
 fi
+
+/sbin/busybox sync
 
 echo "Disk is resized"
